@@ -6,11 +6,11 @@ import (
 )
 
 var UserInfo map[string] string
-func init() {
-	UserInfo = map[string] string {
-		"Joe": "5566",
-	}
-}
+// func init() {
+// 	UserInfo = map[string] string {
+// 		"Joe": "5566",
+// 	}
+// }
 
 func CheckUserIsExist(username string) bool {
 	a, isExist := UserInfo[username]
