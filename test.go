@@ -1,9 +1,8 @@
 package main
 
 import (
-	"html/template"
-	"log"
 	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type IndexData struct {
@@ -12,21 +11,21 @@ type IndexData struct {
 }
 
 // html page
-func test(w http.ResponseWriter, r *http.Request) {
-	tmpl := template.Must(template.ParseFiles("./index.html"))
+func test(c *gin.Context) {
 	data := new(IndexData)
 	data.Title = "首頁"
 	data.Content = "我的第一個首頁"
-	tmpl.Execute(w, data)
+	c.HTML(http.StatusOK, "index.html", data)
 }
 
 func main() {
+	// create server
+	server := gin.Default()
+	server.LoadHTMLGlob("template/*")
+
 	// router setting
-	http.HandleFunc("/", test)
-	http.HandleFunc("/index", test)
+	server.GET("/", test)
+
 	// start server
-	err := http.ListenAndServe(":9999", nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	server.Run(":9999")
 }
