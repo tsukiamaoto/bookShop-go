@@ -23,7 +23,7 @@ func test(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// router setting
 	http.HandleFunc("/", test)
-
+	http.HandleFunc("/index", test)
 	// start server
 	err := http.ListenAndServe(":9999", nil)
 	if err != nil {
