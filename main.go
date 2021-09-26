@@ -1,13 +1,14 @@
 package main
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 // init database
@@ -19,63 +20,51 @@ const (
 	dbname   = "demo"
 )
 
+// user model
 type User struct {
-	ID       string
+	ID       uint `gorm:primaryKey`
 	Username string
 	Password string
 }
 
-func dbConnect() *sql.DB {
+func dbConnect() *gorm.DB {
 	// connect db
-	connect := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable", host, port, user, password, dbname)
+	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable", host, port, user, password, dbname)
 	// open db
-	db, err := sql.Open("postgres", connect)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		fmt.Println("開啟 MySQL 連線發生錯誤，原因為：", err)
-	} else if err := db.Ping(); err != nil {
-		fmt.Println("資料庫連線錯誤，原因為:", err.Error())
+		panic("使用 gorm 連線 DB 發生錯誤，原因為" + err.Error())
 	}
 
 	return db
 }
 
-func CreateTable(db *sql.DB) error {
-	sql := `CREATE TABLE IF NOT EXISTS users(
-		id serial NOT NULL PRIMARY KEY,
-		username VARCHAR(64),
-		password VARCHAR(64)
-	); `
-
-	if _, err := db.Exec(sql); err != nil {
-		fmt.Println("建立 Table 發生錯誤:", err)
-		return err
+func autoMigrate(db *gorm.DB) {
+	if err := db.AutoMigrate(new(User)); err != nil {
+		panic("資料庫migration的失敗原因是" + err.Error())
 	}
-	fmt.Println("建立 Table 成功！")
-	return nil
+	fmt.Println(" migration 成功！")
 }
 
-func insertUser(DB *sql.DB, username, password string) error {
-	_, err := DB.Exec("insert INTO users(username,password) values($1,$2)", username, password)
-	if err != nil {
-		fmt.Printf("建立使用者失敗，原因是：%v", err)
-		return err
+func insertUser(db *gorm.DB, user *User) {
+	result := db.Create(&user)
+	if result.Error != nil {
+		panic("建立使用者失敗，原因是" + result.Error.Error())
 	}
 
 	fmt.Println("建立使用者成功")
-	return nil
 }
 
-func queryUser(db *sql.DB, username string) {
-	user := new(User)
-	row := db.QueryRow("select * from users where username=$1", username)
+func queryUser(db *gorm.DB, username string) {
+	var user User
+	result := db.Where("Username=?", username).First(&user)
 
-	if err := row.Scan(&user.ID, &user.Username, &user.Password); err != nil {
-		fmt.Printf("映射使用者失敗，失敗的原因是:%v\n", err)
-		return
+	if result.Error != nil {
+		panic("查詢不到結果的原因:" + result.Error.Error())
 	}
 
-	fmt.Println("查詢使用者成功", *user)
+	fmt.Println("查詢使用者成功:", user)
 }
 
 // page handler
@@ -123,11 +112,14 @@ func loginAuth(c *gin.Context) {
 func main() {
 	// connect db
 	db := dbConnect()
-	CreateTable(db)
-	insertUser(db, "test", "test")
+	user := &User{
+		Username: "test",
+		Password: "test",
+	}
+	autoMigrate(db)
+	insertUser(db, user)
 	queryUser(db, "test")
 
-	defer db.Close()
 	/*// create server
 	server := gin.Default()
 	// get html page
