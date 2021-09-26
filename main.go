@@ -120,6 +120,7 @@ func main() {
 	insertUser(db, user)
 	queryUser(db, "test")
 
+	setConfig()
 	/*// create server
 	server := gin.Default()
 	// get html page
