@@ -24,7 +24,8 @@ func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserH
 	v1.GET("", handler.GetUserList)
 	v1.GET("/:id", handler.GetUser)
 	v1.POST("", handler.CreateUser)
-	v1.PUT("/:id", handler.ModifyUser)
+	v1.PUT("/:id", handler.UpdateUser)
+	v1.PATCH("/:id", handler.ModifyUser)
 	v1.DELETE("/:id", handler.DeleteUser)
 
 	return handler
