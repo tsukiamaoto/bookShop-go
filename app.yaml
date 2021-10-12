@@ -15,3 +15,8 @@ database:
   user: "postgres"
   password: 9955
   dbname: "demo"
+
+redis:
+  host: "127.0.0.1:6379"
+  password: ""
+  db: 0

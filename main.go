@@ -5,14 +5,19 @@ import (
 	"test/module/user/delivery/http"
 	"test/module/user/repository"
 	"test/module/user/service"
-	"test/util"
+	"test/config"
+	"test/redis"
 
 	"github.com/gin-gonic/gin"
 )
 
+func init() {
+	redis.ConnectRDB()
+}
+
 func main() {
 	// load config
-	config := util.LoadConfig()
+	config := config.LoadConfig()
 
 	// create server
 	server := gin.Default()
