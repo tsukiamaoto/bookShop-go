@@ -12,7 +12,7 @@ import (
 
 func main() {
 	// load config
-	config, _ := util.LoadConfig()
+	config := util.LoadConfig()
 
 	// create server
 	server := gin.Default()

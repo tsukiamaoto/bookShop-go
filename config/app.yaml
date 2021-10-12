@@ -1,8 +1,9 @@
-application:
+test:
   timeout:
     read: 1000
     write: 1000
   port: 8080
+  host: "localhost"
   uploadPath: "./upload"
   mode: "debug"
   appId: "go"
