@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"strconv"
 	"test/model"
 	"test/module/user"
@@ -12,12 +11,12 @@ import (
 )
 
 type UserHttpHandler struct {
-	service user.Service
+	Service user.Service
 }
 
 func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserHandler {
 	var handler = &UserHttpHandler{
-		service: service,
+		Service: service,
 	}
 
 	v1 := engine.Group("/v1/user")
@@ -42,7 +41,7 @@ func (handler *UserHttpHandler) GetUserList(c *gin.Context) {
 		data["password"] = in
 	}
 
-	if result, err := handler.service.GetUserList(data); err != nil {
+	if result, err := handler.Service.GetUserList(data); err != nil {
 		log.Error(err)
 	} else {
 		c.JSON(200, result)
@@ -54,7 +53,7 @@ func (handler *UserHttpHandler) GetUser(c *gin.Context) {
 
 	uid, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 32)
 	data.ID = uint(uid)
-	if result, err := handler.service.GetUser(data); err != nil {
+	if result, err := handler.Service.GetUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
@@ -71,9 +70,7 @@ func (handler *UserHttpHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(data)
-
-	if _, err := handler.service.CreateUser(data); err != nil {
+	if _, err := handler.Service.CreateUser(data); err != nil {
 		c.JSON(500, "Internal error!")
 	} else {
 		c.JSON(200, "create user success")
@@ -89,7 +86,7 @@ func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
 	uid, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 32)
 	data.ID = uint(uid)
 
-	if data, err = handler.service.GetUser(data); err != nil {
+	if data, err = handler.Service.GetUser(data); err != nil {
 		log.Error(err)
 	}
 
@@ -99,7 +96,7 @@ func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if _, err := handler.service.UpdateUser(data); err != nil {
+	if _, err := handler.Service.UpdateUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, "internal error!")
 	} else {
@@ -122,7 +119,7 @@ func (handler *UserHttpHandler) ModifyUser(c *gin.Context) {
 		return
 	}
 
-	if _, err := handler.service.ModifyUser(data, *updateData); err != nil {
+	if _, err := handler.Service.ModifyUser(data, *updateData); err != nil {
 		log.Error(err)
 		c.JSON(500, "internal error!")
 	} else {
@@ -136,7 +133,7 @@ func (handler *UserHttpHandler) DeleteUser(c *gin.Context) {
 	uid, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 32)
 	data.ID = uint(uid)
 
-	if err := handler.service.DeleteUser(data); err != nil {
+	if err := handler.Service.DeleteUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, "internal error!")
 	} else {
