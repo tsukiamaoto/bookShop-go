@@ -8,6 +8,7 @@ test:
   mode: "debug"
   appId: "go"
   apiBaseRoute: "/api"
+  sessionKey: "MTYzNDE5MDk1N3xEdi1CQkFFQ180SUFBUkFCRUFBQUhQLUNBQUVHYzNSeWFXNW5EQVlBQkdGMWRHZ0VZbTl2YkFJQ0FBRT18hwhK_84XTSejk0JNBo8olPV9CSGCreMQUlTx_b0aci4%3D"
   
 database:
   host: "localhost"

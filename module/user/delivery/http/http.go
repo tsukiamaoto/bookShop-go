@@ -1,17 +1,28 @@
 package http
 
 import (
+	Config "test/config"
 	"strconv"
 	"test/model"
 	"test/module/user"
 	"test/module/user/delivery"
+	"test/middleware/auth"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gorilla/sessions"
 	log "github.com/sirupsen/logrus"
 )
 
 type UserHttpHandler struct {
 	Service user.Service
+}
+var store *sessions.CookieStore
+
+func init() {
+	config := Config.LoadConfig()
+	// create new session id and save into "store" global viariable
+	store = sessions.NewCookieStore([]byte(config.SessionKey))
+	store.MaxAge(86400 * 7)
 }
 
 func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserHandler {
@@ -19,13 +30,22 @@ func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserH
 		Service: service,
 	}
 
-	v1 := engine.Group("/v1/user")
-	v1.GET("", handler.GetUserList)
-	v1.GET("/:id", handler.GetUser)
-	v1.POST("", handler.CreateUser)
-	v1.PUT("/:id", handler.UpdateUser)
-	v1.PATCH("/:id", handler.ModifyUser)
-	v1.DELETE("/:id", handler.DeleteUser)
+	v1 := engine.Group("/v1")
+	{
+		userApi := v1.Group("/user")
+		userApi.Use(auth.AuthRequired)
+		userApi.GET("", handler.GetUserList)
+		userApi.GET("/:id", handler.GetUser)
+		userApi.POST("", handler.CreateUser)
+		userApi.PUT("/:id", handler.UpdateUser)
+		userApi.PATCH("/:id", handler.ModifyUser)
+		userApi.DELETE("/:id", handler.DeleteUser)
+	}
+	{
+		v1.POST("/login", handler.Login)
+		v1.POST("/logout", handler.Logout)
+	}
+	
 
 	return handler
 }
@@ -66,15 +86,18 @@ func (handler *UserHttpHandler) CreateUser(c *gin.Context) {
 
 	if err := c.ShouldBind(&data); err != nil || data == nil {
 		log.Error(err)
-		c.JSON(500, "Internal error!")
+		c.JSON(500, err.Error())
 		return
 	}
 
 	if _, err := handler.Service.CreateUser(data); err != nil {
-		c.JSON(500, "Internal error!")
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
 	} else {
 		c.JSON(200, "create user success")
 	}
+
 }
 
 func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
@@ -139,4 +162,55 @@ func (handler *UserHttpHandler) DeleteUser(c *gin.Context) {
 	} else {
 		c.JSON(200, "delete success")
 	}
+}
+
+func (handler *UserHttpHandler) Login(c *gin.Context) {
+	var data = new(model.User)
+	if err := c.ShouldBind(&data); err != nil || data == nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	if _, err := handler.Service.GetUser(data); err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	session, err := store.Get(c.Request, "session-name")
+	if err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	session.Values["auth"] = true
+	err = session.Save(c.Request, c.Writer)
+	if err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	c.JSON(200, "logged in successfully!")
+}
+
+func (handler *UserHttpHandler) Logout(c *gin.Context) {
+	session, err := store.Get(c.Request, "session-name")
+	if err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	session.Values["auth"] = nil
+	err = session.Save(c.Request, c.Writer)
+	if err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	c.JSON(200, "logged out successfully!")
 }

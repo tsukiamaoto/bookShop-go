@@ -9,4 +9,6 @@ type UserHandler interface {
 	UpdateUser(c *gin.Context)
 	ModifyUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	Login(c *gin.Context)
+	Logout(c *gin.Context)
 }
