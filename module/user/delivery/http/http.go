@@ -1,12 +1,12 @@
 package http
 
 import (
-	Config "test/config"
+	Config "shopCart/config"
+	"shopCart/middleware/auth"
+	"shopCart/model"
+	"shopCart/module/user"
+	"shopCart/module/user/delivery"
 	"strconv"
-	"test/model"
-	"test/module/user"
-	"test/module/user/delivery"
-	"test/middleware/auth"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
@@ -16,6 +16,7 @@ import (
 type UserHttpHandler struct {
 	Service user.Service
 }
+
 var store *sessions.CookieStore
 
 func init() {
@@ -45,7 +46,6 @@ func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserH
 		v1.POST("/login", handler.Login)
 		v1.POST("/logout", handler.Logout)
 	}
-	
 
 	return handler
 }

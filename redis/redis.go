@@ -4,7 +4,8 @@ import (
 	"context"
 	"time"
 
-	Config "test/config"
+	Config "shopCart/config"
+
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 )

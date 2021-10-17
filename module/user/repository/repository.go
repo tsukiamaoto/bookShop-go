@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"test/model"
-	"test/module/user"
+	"shopCart/model"
+	"shopCart/module/user"
 
 	"gorm.io/gorm"
 )

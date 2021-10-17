@@ -4,9 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	mocks "test/mocks/module/user"
-	"test/model"
-	"test/module/user/service"
+	mocks "shopCart/mocks/module/user"
+	"shopCart/model"
+	"shopCart/module/user/service"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -72,7 +72,7 @@ func TestGetUser(t *testing.T) {
 			Return(mockUser, nil).Once()
 
 		userRepo := service.NewUserSerivce(mockRepository)
-		user, err := userRepo.GetUser(&model.User{ ID: uint(1)})
+		user, err := userRepo.GetUser(&model.User{ID: uint(1)})
 
 		assert.NoError(t, err)
 		assert.NotNil(t, user)
@@ -87,7 +87,7 @@ func TestGetUser(t *testing.T) {
 			Return(nil, errors.New("Got error")).Once()
 
 		userRepo := service.NewUserSerivce(mockRepository)
-		user, err := userRepo.GetUser(&model.User{ ID: uint(1)})
+		user, err := userRepo.GetUser(&model.User{ID: uint(1)})
 
 		assert.Error(t, err)
 		assert.Nil(t, user)
@@ -190,7 +190,7 @@ func TestModifyUser(t *testing.T) {
 		},
 	}
 
-	newUser := map[string]interface{} {
+	newUser := map[string]interface{}{
 		"username": "456",
 		"password": "456",
 	}
@@ -224,7 +224,7 @@ func TestModifyUser(t *testing.T) {
 	})
 }
 
-func TestDeleteUser (t *testing.T) {
+func TestDeleteUser(t *testing.T) {
 	mockRepository := new(mocks.Repository)
 
 	t.Run("Success", func(t *testing.T) {
@@ -247,7 +247,7 @@ func TestDeleteUser (t *testing.T) {
 			Return(errors.New("Got error")).Once()
 
 		userRepo := service.NewUserSerivce(mockRepository)
-	  err := userRepo.DeleteUser(&model.User{ID: 1})
+		err := userRepo.DeleteUser(&model.User{ID: 1})
 
 		assert.Error(t, err)
 

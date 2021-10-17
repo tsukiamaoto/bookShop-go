@@ -8,8 +8,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/magiconair/properties/assert"
 
-	"test/model"
-	"test/module/user/repository"
+	"shopCart/model"
+	"shopCart/module/user/repository"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -193,7 +193,7 @@ func TestModifyUser(t *testing.T) {
 
 	userRepo := repository.NewUserRepository(gdb)
 
-	newUser := map[string]interface{} {
+	newUser := map[string]interface{}{
 		"username": "123",
 		"password": "123",
 	}

@@ -2,7 +2,7 @@ package auth
 
 import (
 	"net/http"
-	Config "test/config"
+	Config "shopCart/config"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"

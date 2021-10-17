@@ -34,13 +34,13 @@ func LoadConfig() *Config {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable",
 		viper.GetString("database.host"), viper.GetInt("database.port"), viper.GetString("database.user"),
 		viper.GetInt("database.password"), viper.GetString("database.dbname"))
-	serverAddress := fmt.Sprintf("%s:%d", viper.GetString("test.host"), viper.GetInt("test.port"))
+	serverAddress := fmt.Sprintf("%s:%d", viper.GetString("application.host"), viper.GetInt("application.port"))
 	redis := &Redis{
 		Address:  viper.GetString("redis.host"),
 		Password: viper.GetString("redis.password"),
 		DB:       viper.GetInt("redis.db"),
 	}
-	sessionKey := viper.GetString("test.sessionKey")
+	sessionKey := viper.GetString("application.sessionKey")
 
 	config := &Config{
 		DBSource:      dsn,

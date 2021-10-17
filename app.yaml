@@ -1,4 +1,4 @@
-test:
+application:
   timeout:
     read: 1000
     write: 1000

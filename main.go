@@ -1,12 +1,12 @@
 package main
 
 import (
-	"test/db"
-	"test/module/user/delivery/http"
-	"test/module/user/repository"
-	"test/module/user/service"
-	"test/config"
-	"test/redis"
+	"shopCart/config"
+	"shopCart/db"
+	"shopCart/module/user/delivery/http"
+	"shopCart/module/user/repository"
+	"shopCart/module/user/service"
+	"shopCart/redis"
 
 	"github.com/gin-gonic/gin"
 )

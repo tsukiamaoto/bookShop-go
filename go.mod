@@ -1,4 +1,4 @@
-module test
+module shopCart
 
 go 1.17
 

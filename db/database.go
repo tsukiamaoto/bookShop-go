@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"test/model"
+	"shopCart/model"
 
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"

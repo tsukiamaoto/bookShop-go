@@ -1,18 +1,17 @@
 package http_test
 
 import (
-	"strconv"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strconv"
 	"strings"
 	"testing"
-	
 
-	mocks "test/mocks/module/user"
-	"test/model"
-	userHttpHandlerDelivery "test/module/user/delivery/http"
+	mocks "shopCart/mocks/module/user"
+	"shopCart/model"
+	userHttpHandlerDelivery "shopCart/module/user/delivery/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	model "test/model"
+	model "shopCart/model"
 
 	mock "github.com/stretchr/testify/mock"
 )

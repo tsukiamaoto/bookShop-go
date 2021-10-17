@@ -1,6 +1,6 @@
 package user
 
-import "test/model"
+import "shopCart/model"
 
 type Service interface {
 	GetUserList(map[string]interface{}) ([]*model.User, error)

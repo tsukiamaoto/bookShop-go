@@ -1,8 +1,8 @@
 package service
 
 import (
-	"test/model"
-	"test/module/user"
+	"shopCart/model"
+	"shopCart/module/user"
 )
 
 type UserService struct {
