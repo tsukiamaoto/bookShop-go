@@ -1,15 +1,15 @@
 package http
 
 import (
-	Config "shopCart/config"
 	"shopCart/middleware/auth"
 	"shopCart/model"
 	"shopCart/module/user"
 	"shopCart/module/user/delivery"
+	"shopCart/config"
 	"strconv"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/sessions"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -17,32 +17,25 @@ type UserHttpHandler struct {
 	Service user.Service
 }
 
-var store *sessions.CookieStore
-
-func init() {
-	config := Config.LoadConfig()
-	// create new session id and save into "store" global viariable
-	store = sessions.NewCookieStore([]byte(config.SessionKey))
-	store.MaxAge(86400 * 7)
-}
-
 func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserHandler {
 	var handler = &UserHttpHandler{
 		Service: service,
 	}
+	var config = config.LoadConfig()
 
 	v1 := engine.Group("/v1")
 	{
 		userApi := v1.Group("/user")
+		userApi.Use(cors.New(auth.CorsConfig(config)))
 		userApi.Use(auth.AuthRequired)
 		userApi.GET("", handler.GetUserList)
 		userApi.GET("/:id", handler.GetUser)
-		userApi.POST("", handler.CreateUser)
 		userApi.PUT("/:id", handler.UpdateUser)
 		userApi.PATCH("/:id", handler.ModifyUser)
 		userApi.DELETE("/:id", handler.DeleteUser)
 	}
 	{
+		v1.POST("/user", handler.CreateUser)
 		v1.POST("/login", handler.Login)
 		v1.POST("/logout", handler.Logout)
 	}
@@ -178,39 +171,21 @@ func (handler *UserHttpHandler) Login(c *gin.Context) {
 		return
 	}
 
-	session, err := store.Get(c.Request, "session-name")
-	if err != nil {
-		log.Error(err)
+	if err := auth.SaveToRedis(c); err != nil {
 		c.JSON(500, err.Error())
-		return
 	}
 
-	session.Values["auth"] = true
-	err = session.Save(c.Request, c.Writer)
-	if err != nil {
-		log.Error(err)
-		c.JSON(500, err.Error())
-		return
-	}
-
-	c.JSON(200, "logged in successfully!")
+	c.JSON(200, gin.H{
+		"isLogined": true,
+	})
 }
 
 func (handler *UserHttpHandler) Logout(c *gin.Context) {
-	session, err := store.Get(c.Request, "session-name")
-	if err != nil {
-		log.Error(err)
+	if err := auth.DeleteFromRedis(c); err != nil {
 		c.JSON(500, err.Error())
-		return
 	}
 
-	session.Values["auth"] = nil
-	err = session.Save(c.Request, c.Writer)
-	if err != nil {
-		log.Error(err)
-		c.JSON(500, err.Error())
-		return
-	}
-
-	c.JSON(200, "logged out successfully!")
+	c.JSON(200, gin.H{
+		"isLogined": false,
+	})
 }

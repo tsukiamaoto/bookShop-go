@@ -15,7 +15,7 @@ type Redis struct {
 type Config struct {
 	DBSource      string
 	ServerAddress string
-	SessionKey    string
+	AllowOrigins   []string
 	Redis         *Redis
 }
 
@@ -40,13 +40,13 @@ func LoadConfig() *Config {
 		Password: viper.GetString("redis.password"),
 		DB:       viper.GetInt("redis.db"),
 	}
-	sessionKey := viper.GetString("application.sessionKey")
+	allowOrigins := viper.GetStringSlice("application.cors.allowOrigins")
 
 	config := &Config{
 		DBSource:      dsn,
 		ServerAddress: serverAddress,
 		Redis:         redis,
-		SessionKey:    sessionKey,
+		AllowOrigins:    allowOrigins,
 	}
 
 	return config

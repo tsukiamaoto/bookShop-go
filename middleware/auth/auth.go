@@ -2,35 +2,94 @@ package auth
 
 import (
 	"net/http"
-	Config "shopCart/config"
+	"shopCart/redis"
+	"shopCart/config"
 
+	"github.com/rbcervilla/redisstore/v8"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
+	"github.com/gin-contrib/cors"
 	log "github.com/sirupsen/logrus"
 )
 
-var store *sessions.CookieStore
+var store *redisstore.RedisStore
 
 func init() {
-	config := Config.LoadConfig()
-	// create new session id and save into "store" global viariable
-	store = sessions.NewCookieStore([]byte(config.SessionKey))
-	store.MaxAge(86400 * 7)
+	var (
+		err error
+	)
+
+	// set redis configuration
+	store, err = redisstore.NewRedisStore(redis.GetRDB().Context(), redis.GetRDB())
+	if err != nil {
+		log.Error("failed to create redis store: ", err)
+	}
+	store.KeyPrefix("session_")
+	store.Options(sessions.Options{
+			Path:   "/",
+			// Domain: "localhost",
+			MaxAge: 86400 * 7, // 7 days
+	})
+
+}
+
+func CorsConfig(conf *config.Config) cors.Config {
+  corsConf := cors.DefaultConfig()
+	corsConf.AllowOrigins = conf.AllowOrigins
+	// corsConf.AllowCredentials = true
+	// corsConf.AllowAllOrigins = true
+	corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
+			"Connection", "Accept-Encoding", "Accept-Language", "Host", "Access-Control-Request-Method", "Access-Control-Request-Headers"}
+
+	return corsConf
 }
 
 func AuthRequired(c *gin.Context) {
-	session, err := store.Get(c.Request, "session-name")
+	session, err := store.Get(c.Request, "session-key")
 	if err != nil {
-		log.Error(err)
+		log.Error("Failded to get session, reason is:", err)
 		c.JSON(500, err.Error())
 		return
 	}
 	// if auth is nil return error message
 	if session.Values["auth"] == nil {
-		log.Error(err)
+		log.Error("Failded to get auth from session, reason is:", err)
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
 	c.Next()
+}
+
+func SaveToRedis(c *gin.Context) error {
+	session, err := store.Get(c.Request, "session-key")
+	if err != nil {
+		log.Error("Failed to get session, reason is :", err)
+		return err
+	}
+
+	session.Values["auth"] = true
+	if err = session.Save(c.Request, c.Writer); err != nil {
+		log.Error("Failed to save session, reason is :", err)
+		return err
+	}
+
+	return nil
+}
+
+func DeleteFromRedis(c *gin.Context) error {
+	session, err := store.Get(c.Request, "session-key")
+	if err != nil {
+		log.Error("Failed to get session, reason is :", err)
+		return err
+	}
+
+	// redis delete data when Maxage <= 0  
+	session.Options.MaxAge = -1
+	if err = session.Save(c.Request, c.Writer); err != nil {
+		log.Error("Failed to delete session, reason is :", err)
+		return err
+	}
+
+	return nil
 }

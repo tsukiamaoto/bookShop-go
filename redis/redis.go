@@ -24,13 +24,14 @@ func newRDB() *redis.Client {
 
 func ConnectRDB() {
 	RDB = newRDB()
+
 	_, err := RDB.Ping(ctx).Result()
 	if err != nil {
 		log.Error(err)
 	}
 }
 
-func getRDB() *redis.Client{
+func GetRDB() *redis.Client{
 	if RDB != nil {
 		return RDB
 	}
@@ -38,7 +39,7 @@ func getRDB() *redis.Client{
 }
 
 func Get(key string) string {
-	value, err := getRDB().Get(ctx, key).Result()
+	value, err := GetRDB().Get(ctx, key).Result()
 	if err != nil {
 		log.Error(err)
 	}
@@ -46,14 +47,14 @@ func Get(key string) string {
 }
 
 func Set(key string, value interface{}) {
-	_, err := getRDB().Set(ctx, key, value, 0).Result()
+	_, err := GetRDB().Set(ctx, key, value, 0).Result()
 	if err != nil {
 		log.Error(err)
 	}
 }
 
 func GetEx(key string, expiration time.Duration) string {
-	value, err := getRDB().GetEx(ctx, key, expiration).Result()
+	value, err := GetRDB().GetEx(ctx, key, expiration).Result()
 	if err != nil {
 		log.Error(err)
 	}
@@ -61,14 +62,14 @@ func GetEx(key string, expiration time.Duration) string {
 }
 
 func SetEx(key string, value interface{}, expiration time.Duration) {
-	_, err := getRDB().Set(ctx, key, value, expiration).Result()
+	_, err := GetRDB().Set(ctx, key, value, expiration).Result()
 	if err != nil {
 		log.Error(err)
 	}
 }
 
 func Exists(key string) bool {
-	ok, err := getRDB().Exists(ctx, key).Result()
+	ok, err := GetRDB().Exists(ctx, key).Result()
 	if err != nil {
 		log.Error(err)
 	}
