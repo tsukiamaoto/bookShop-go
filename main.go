@@ -21,10 +21,6 @@ func main() {
 
 	// create server
 	server := gin.Default()
-	// get html page
-	server.LoadHTMLGlob("template/html/*")
-	// get static resources
-	server.Static("/assets", "./template/assets")
 
 	// connect database
 	conn := db.DbConnect(config.DBSource)
