@@ -1,11 +1,10 @@
 package http
 
 import (
-	"shopCart/middleware/auth"
-	"shopCart/model"
-	"shopCart/module/user"
-	"shopCart/module/user/delivery"
 	"shopCart/config"
+	"shopCart/model"
+	"shopCart/middleware/auth"
+
 	"strconv"
 
 	"github.com/gin-contrib/cors"
@@ -13,37 +12,28 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type UserHttpHandler struct {
-	Service user.Service
+func (handler *Handler) initUserRoutes(api *gin.RouterGroup, conf *config.Config) {
+	users := api.Group("/user")
+	{
+		users.POST("/signup", handler.CreateUser)
+		users.POST("/login", handler.Login)
+		users.POST("/logout", handler.Logout)
+
+		authenticated := users.Use(
+			cors.New(auth.CorsConfig(conf)),
+			auth.AuthRequired,
+		)
+		{
+			authenticated.GET("", handler.GetUserList)
+			authenticated.GET("/:id", handler.GetUser)
+			authenticated.PUT("/:id", handler.UpdateUser)
+			authenticated.PATCH("/:id", handler.ModifyUser)
+			authenticated.DELETE("/:id", handler.DeleteUser)
+		}
+	}
 }
 
-func NewUserHttpHandler(engine *gin.Engine, service user.Service) delivery.UserHandler {
-	var handler = &UserHttpHandler{
-		Service: service,
-	}
-	var config = config.LoadConfig()
-
-	v1 := engine.Group("/v1")
-	{
-		userApi := v1.Group("/user")
-		userApi.Use(cors.New(auth.CorsConfig(config)))
-		userApi.Use(auth.AuthRequired)
-		userApi.GET("", handler.GetUserList)
-		userApi.GET("/:id", handler.GetUser)
-		userApi.PUT("/:id", handler.UpdateUser)
-		userApi.PATCH("/:id", handler.ModifyUser)
-		userApi.DELETE("/:id", handler.DeleteUser)
-	}
-	{
-		v1.POST("/user", handler.CreateUser)
-		v1.POST("/login", handler.Login)
-		v1.POST("/logout", handler.Logout)
-	}
-
-	return handler
-}
-
-func (handler *UserHttpHandler) GetUserList(c *gin.Context) {
+func (handler *Handler) GetUserList(c *gin.Context) {
 	var data = map[string]interface{}{}
 
 	// query url string
@@ -54,19 +44,19 @@ func (handler *UserHttpHandler) GetUserList(c *gin.Context) {
 		data["password"] = in
 	}
 
-	if result, err := handler.Service.GetUserList(data); err != nil {
+	if result, err := handler.services.Users.GetUserList(data); err != nil {
 		log.Error(err)
 	} else {
 		c.JSON(200, result)
 	}
 }
 
-func (handler *UserHttpHandler) GetUser(c *gin.Context) {
+func (handler *Handler) GetUser(c *gin.Context) {
 	var data = new(model.User)
 
 	uid, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 32)
 	data.ID = uint(uid)
-	if result, err := handler.Service.GetUser(data); err != nil {
+	if result, err := handler.services.Users.GetUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
@@ -74,7 +64,7 @@ func (handler *UserHttpHandler) GetUser(c *gin.Context) {
 	}
 }
 
-func (handler *UserHttpHandler) CreateUser(c *gin.Context) {
+func (handler *Handler) CreateUser(c *gin.Context) {
 	var data = new(model.User)
 
 	if err := c.ShouldBind(&data); err != nil || data == nil {
@@ -83,7 +73,7 @@ func (handler *UserHttpHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	if _, err := handler.Service.CreateUser(data); err != nil {
+	if _, err := handler.services.Users.CreateUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
@@ -93,7 +83,7 @@ func (handler *UserHttpHandler) CreateUser(c *gin.Context) {
 
 }
 
-func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
+func (handler *Handler) UpdateUser(c *gin.Context) {
 	var (
 		data = new(model.User)
 		err  error
@@ -102,7 +92,7 @@ func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
 	uid, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 32)
 	data.ID = uint(uid)
 
-	if data, err = handler.Service.GetUser(data); err != nil {
+	if data, err = handler.services.Users.GetUser(data); err != nil {
 		log.Error(err)
 	}
 
@@ -112,7 +102,7 @@ func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if _, err := handler.Service.UpdateUser(data); err != nil {
+	if _, err := handler.services.Users.UpdateUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, "internal error!")
 	} else {
@@ -120,7 +110,7 @@ func (handler *UserHttpHandler) UpdateUser(c *gin.Context) {
 	}
 }
 
-func (handler *UserHttpHandler) ModifyUser(c *gin.Context) {
+func (handler *Handler) ModifyUser(c *gin.Context) {
 	var (
 		data       = new(model.User)
 		updateData = new(map[string]interface{})
@@ -135,7 +125,7 @@ func (handler *UserHttpHandler) ModifyUser(c *gin.Context) {
 		return
 	}
 
-	if _, err := handler.Service.ModifyUser(data, *updateData); err != nil {
+	if _, err := handler.services.Users.ModifyUser(data, *updateData); err != nil {
 		log.Error(err)
 		c.JSON(500, "internal error!")
 	} else {
@@ -143,13 +133,13 @@ func (handler *UserHttpHandler) ModifyUser(c *gin.Context) {
 	}
 }
 
-func (handler *UserHttpHandler) DeleteUser(c *gin.Context) {
+func (handler *Handler) DeleteUser(c *gin.Context) {
 	var data = new(model.User)
 
 	uid, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 32)
 	data.ID = uint(uid)
 
-	if err := handler.Service.DeleteUser(data); err != nil {
+	if err := handler.services.Users.DeleteUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, "internal error!")
 	} else {
@@ -157,7 +147,7 @@ func (handler *UserHttpHandler) DeleteUser(c *gin.Context) {
 	}
 }
 
-func (handler *UserHttpHandler) Login(c *gin.Context) {
+func (handler *Handler) Login(c *gin.Context) {
 	var data = new(model.User)
 	if err := c.ShouldBind(&data); err != nil || data == nil {
 		log.Error(err)
@@ -165,7 +155,7 @@ func (handler *UserHttpHandler) Login(c *gin.Context) {
 		return
 	}
 
-	if _, err := handler.Service.GetUser(data); err != nil {
+	if _, err := handler.services.Users.GetUser(data); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
@@ -180,7 +170,7 @@ func (handler *UserHttpHandler) Login(c *gin.Context) {
 	})
 }
 
-func (handler *UserHttpHandler) Logout(c *gin.Context) {
+func (handler *Handler) Logout(c *gin.Context) {
 	if err := auth.DeleteFromRedis(c); err != nil {
 		c.JSON(500, err.Error())
 	}

@@ -3,12 +3,11 @@ package main
 import (
 	"shopCart/config"
 	"shopCart/db"
-	"shopCart/module/user/delivery/http"
-	"shopCart/module/user/repository"
-	"shopCart/module/user/service"
+	"shopCart/module/delivery"
+	"shopCart/module/repository"
+	"shopCart/module/service"
+	"shopCart/module/server"
 	"shopCart/redis"
-	
-	"github.com/gin-gonic/gin"
 )
 
 func init() {
@@ -19,22 +18,23 @@ func main() {
 	// load config
 	config := config.LoadConfig()
 
-	// create server
-	server := gin.Default()
-
 	// connect database
 	conn := db.DbConnect(config.DBSource)
 	db.AutoMigrate(conn)
 
 	// create repository instance
-	userRepo := repository.NewUserRepository(conn)
+	repos := repository.NewRepositories(conn)
 
 	// create service instance
-	userService := service.NewUserSerivce(userRepo)
+	services := service.NewServices(service.Deps{
+		Repos: repos,
+	})
 
 	// create delivery instance
-	http.NewUserHttpHandler(server, userService)
-
+	handler := delivery.NewHandler(services)
+	
+	// create server isntance
+	srv := server.NewServer(config, handler.Init(config))
 	// start server
-	server.Run(config.ServerAddress)
+	srv.Run()
 }
