@@ -21,6 +21,10 @@ func (h *Handler) Init(api *gin.RouterGroup, conf *config.Config) {
 	v1 := api.Group("/v1")
 	{
 		h.initUserRoutes(v1, conf)
+		h.initCartRoutes(v1, conf)
+		h.initOrderRoutes(v1, conf)
+		h.initSellerRoutes(v1, conf)
+		h.initProductRoutes(v1, conf)
 	}
-	
+
 }
