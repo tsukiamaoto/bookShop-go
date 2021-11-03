@@ -16,49 +16,44 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (u *UserRepository) GetUserList(data map[string]interface{}) ([]*model.User, error) {
+func (u *UserRepository) GetUserList() ([]*model.User, error) {
 	var (
-		err    error
-		result = make([]*model.User, 0)
+		users = make([]*model.User, 0)
 	)
 
-	err = u.db.Find(&result, data).Error
+	err := u.db.Model(&model.User{}).Find(&users).Error
 
-	return result, err
+	return users, err
 
 }
 
-func (u *UserRepository) GetUser(result *model.User) (*model.User, error) {
-	var err error
-	err = u.db.First(&result).Error
+func (u *UserRepository) GetUser(user *model.User) (*model.User, error) {
+	err := u.db.First(&user).Error
 
-	return result, err
+	return user, err
 }
 
-func (u *UserRepository) CreateUser(result *model.User) (*model.User, error) {
-	var err error
-	err = u.db.Create(&result).Error
+func (u *UserRepository) GetUserById(userId uint) (*model.User, error) {
+	var user *model.User
+	err := u.db.First(&user).Error
 
-	return result, err
+	return user, err
 }
 
-func (u *UserRepository) UpdateUser(result *model.User) (*model.User, error) {
-	var err error
-	err = u.db.Save(&result).Error
+func (u *UserRepository) CreateUser(user *model.User) (*model.User, error) {
+	err := u.db.Create(&user).Error
 
-	return result, err
+	return user, err
 }
 
-func (u *UserRepository) ModifyUser(result *model.User, data map[string]interface{}) (*model.User, error) {
-	var err error
-	err = u.db.Model(&result).Updates(data).Error
+func (u *UserRepository) UpdateUser(user *model.User) (*model.User, error) {
+	err := u.db.Model(&model.User{ID: user.ID}).Updates(&user).Error
 
-	return result, err
+	return user, err
 }
 
-func (u *UserRepository) DeleteUser(result *model.User) error {
-	var err error
-	err = u.db.Delete(&result).Error
+func (u *UserRepository) DeleteUser(userId uint) error {
+	err := u.db.Delete(&model.User{ID: userId}).Error
 
 	return err
 }
