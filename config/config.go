@@ -13,10 +13,15 @@ type Redis struct {
 }
 
 type Config struct {
-	DBSource      string
+	Databases     map[string]*Database
 	ServerAddress string
-	AllowOrigins   []string
+	AllowOrigins  []string
 	Redis         *Redis
+}
+
+type Database struct {
+	Name   string
+	Source string
 }
 
 func LoadConfig() *Config {
@@ -31,9 +36,10 @@ func LoadConfig() *Config {
 		panic("讀取設定檔出現錯誤，錯誤的原因為" + err.Error())
 	}
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable",
-		viper.GetString("database.host"), viper.GetInt("database.port"), viper.GetString("database.user"),
-		viper.GetInt("database.password"), viper.GetString("database.dbname"))
+	var dbs = make(map[string]*Database)
+	dbs["shopCart"] = getDatabase("shopCart")
+	dbs["default"] = getDatabase("default")
+
 	serverAddress := fmt.Sprintf("%s:%d", viper.GetString("application.host"), viper.GetInt("application.port"))
 	redis := &Redis{
 		Address:  viper.GetString("redis.host"),
@@ -43,11 +49,26 @@ func LoadConfig() *Config {
 	allowOrigins := viper.GetStringSlice("application.cors.allowOrigins")
 
 	config := &Config{
-		DBSource:      dsn,
+		Databases:      dbs,
 		ServerAddress: serverAddress,
 		Redis:         redis,
-		AllowOrigins:    allowOrigins,
+		AllowOrigins:  allowOrigins,
 	}
 
 	return config
+}
+
+func getDatabase(name string) *Database {
+	source := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable TimeZone=Asia/Taipei",
+		viper.GetString(fmt.Sprintf("databases.%s.host", name)),
+		viper.GetInt(fmt.Sprintf("databases.%s.port", name)),
+		viper.GetString(fmt.Sprintf("databases.%s.user", name)),
+		viper.GetInt(fmt.Sprintf("databases.%s.password", name)),
+		viper.GetString(fmt.Sprintf("databases.%s.dbname", name)),
+	)
+
+	return &Database{
+		Name: name,
+		Source: source,
+	}
 }

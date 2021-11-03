@@ -19,7 +19,7 @@ func main() {
 	config := config.LoadConfig()
 
 	// connect database
-	conn := db.DbConnect(config.DBSource)
+	conn := db.DbConnect(config)
 	db.AutoMigrate(conn)
 
 	// create repository instance

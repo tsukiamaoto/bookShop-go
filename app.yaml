@@ -11,12 +11,20 @@ application:
   cors:
     allowOrigins: ["http://localhost:3000"]
   
-database:
-  host: "localhost"
-  port: 5432
-  user: "postgres"
-  password: 9955
-  dbname: "demo"
+databases:
+  shopCart:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: 9955
+    dbname: "shop_cart"
+
+  default:
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: 9955
+    dbname: "postgres"
 
 redis:
   host: "127.0.0.1:6379"
