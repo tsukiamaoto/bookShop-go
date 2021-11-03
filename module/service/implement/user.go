@@ -9,32 +9,32 @@ type UsersService struct {
 	repo repo.Users
 }
 
-func NewUserSerivce(repo repo.Users) *UsersService {
+func NewUsersService(repo repo.Users) *UsersService {
 	return &UsersService{
 		repo: repo,
 	}
 }
 
-func (u *UsersService) GetUserList(data map[string]interface{}) ([]*model.User, error) {
-	return u.repo.GetUserList(data)
+func (u *UsersService) GetUserList() ([]*model.User, error) {
+	return u.repo.GetUserList()
 }
 
-func (u *UsersService) GetUser(result *model.User) (*model.User, error) {
-	return u.repo.GetUser(result)
+func (u *UsersService) GetUser(user *model.User) (*model.User, error) {
+	return u.repo.GetUser(user)
 }
 
-func (u *UsersService) CreateUser(result *model.User) (*model.User, error) {
-	return u.repo.CreateUser(result)
+func (u *UsersService) GetUserById(userId uint) (*model.User, error) {
+	return u.repo.GetUserById(userId)
 }
 
-func (u *UsersService) UpdateUser(result *model.User) (*model.User, error) {
-	return u.repo.UpdateUser(result)
+func (u *UsersService) CreateUser(user *model.User) (*model.User, error) {
+	return u.repo.CreateUser(user)
 }
 
-func (u *UsersService) ModifyUser(result *model.User, data map[string]interface{}) (*model.User, error) {
-	return u.repo.ModifyUser(result, data)
+func (u *UsersService) UpdateUser(user *model.User) (*model.User, error) {
+	return u.repo.UpdateUser(user)
 }
 
-func (u *UsersService) DeleteUser(result *model.User) error {
-	return u.repo.DeleteUser(result)
+func (u *UsersService) DeleteUser(userId uint) error {
+	return u.repo.DeleteUser(userId)
 }
