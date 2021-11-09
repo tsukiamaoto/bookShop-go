@@ -25,16 +25,36 @@ func (handler *Handler) initCartRoutes(api *gin.RouterGroup, conf *config.Config
 	}
 }
 
+// @Summary Get CartItem List
+// @Tags Cart
+// @Description get cart item list by user id
+// @ModuleID getCartItemListByUserId
+// @Accept json
+// @Produce json
+// @Success 200 {object} dataResponse{data=[]model.CartItem} "get cartItems"
+// @Failure 500 string Internal error
+// @Router /cart [get]
 func (handler *Handler) GetCartItemListByUserId(c *gin.Context) {
 	userId, _ := middleware.GetUserId(c)
 	if cartItemList, err := handler.services.Carts.GetCartItemListByUserId(userId); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
-		c.JSON(200, cartItemList)
+		c.JSON(200, dataResponse{Data: cartItemList})
 	}
 }
 
+// @Summary Add CartItem
+// @Tags Cart
+// @Description add cart item by user id
+// @ModuleID addCartItemByUserId
+// @Accept json
+// @Produce json
+// @Param product formData model.Product true "product"
+// @Param quantity formData int true "quantity"
+// @Success 200 {object} dataResponse{data=string} "Added cartItem successfully!"
+// @Failure 500 string Internal error
+// @Router /cart [post]
 func (handler *Handler) AddCartItemByUserId(c *gin.Context) {
 	var (
 		cartItem = new(model.CartItem)
@@ -54,9 +74,19 @@ func (handler *Handler) AddCartItemByUserId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Added cartItem successfully!")
+	c.JSON(200, dataResponse{Data: "Added cartItem successfully!"})
 }
 
+// @Summary Update CartItem
+// @Tags Cart
+// @Description updated cart item by cart item id
+// @ModuleID updateCartItemById
+// @Accept json
+// @Produce json
+// @Param cartItemId path string true "cartItem id"
+// @Success 200 {object} dataResponse{data=string} "Updated cartItem successfully!"
+// @Failure 500 string parameter error!
+// @Router /cart/:cartItemId [put]
 func (handler *Handler) UpdateCartItemById(c *gin.Context) {
 	var cartItem = new(model.CartItem)
 
@@ -75,9 +105,19 @@ func (handler *Handler) UpdateCartItemById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Updated cartItem successfully!")
+	c.JSON(200, dataResponse{Data: "Updated cartItem successfully!"})
 }
 
+// @Summary Delete CartItem
+// @Tags Cart
+// @Description delete cart item by cart item id
+// @ModuleID deleteCartItem
+// @Accept json
+// @Produce json
+// @Param cartItemId path string true "cartItem id"
+// @Success 200 {object} dataResponse{data=string} "Deleted cartItem successfully!"
+// @Failure 500 string parameter error!
+// @Router /cart/:cartItemId [delete]
 func (handler *Handler) DeleteCartItem(c *gin.Context) {
 	uid64, _ := strconv.ParseUint(c.Params.ByName("cartItemId"), 10, 64)
 	cartItemId := uint(uid64)
@@ -88,5 +128,5 @@ func (handler *Handler) DeleteCartItem(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Deleted cartItem successfully!")
+	c.JSON(200, dataResponse{Data: "Deleted cartItem successfully!"})
 }

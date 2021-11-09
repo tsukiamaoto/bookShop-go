@@ -4,8 +4,13 @@ import (
 	"shopCart/config"
 	v1 "shopCart/module/delivery/http"
 	"shopCart/module/service"
+	docs "shopCart/docs"
+
+	"fmt"
 
 	"github.com/gin-gonic/gin"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 type UserHandler interface {
@@ -58,6 +63,11 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) Init(conf *config.Config) *gin.Engine {
 	// create server
 	router := gin.Default()
+
+	docs.SwaggerInfo.BasePath = "/api/v1"
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", "localhost", 8080)
+
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// init api
 	h.initApi(router, conf)

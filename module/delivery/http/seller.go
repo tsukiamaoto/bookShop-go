@@ -25,16 +25,38 @@ func (handler *Handler) initSellerRoutes(api *gin.RouterGroup, conf *config.Conf
 	}
 }
 
+// @Summary Get Product List
+// @Tags Seller
+// @Description get product list by user id
+// @ModuleID getProductListByUserId
+// @Accept json
+// @Produce json
+// @Success 200 {object} dataResponse{data=[]model.Product} "get products"
+// @Failure 500 string Internal error
+// @Router /seller [get]
 func (handler *Handler) GetProductListByUserId(c *gin.Context) {
 	userId, _ := middleware.GetUserId(c)
 	if productList, err := handler.services.Sellers.GetProductListByUserId(userId); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
-		c.JSON(200, productList)
+		c.JSON(200, dataResponse{Data: productList})
 	}
 }
 
+// @Summary Add Product
+// @Tags Seller
+// @Description add product by user id
+// @ModuleID addProductByUserId
+// @Accept json
+// @Produce json
+// @Param name formData string true "name"
+// @Param description formData string true "description"
+// @Param categories formData model.Category true "categories"
+// @Success 200 {object} dataResponse{data=string} "Created new product successfully!"
+// @Failure 500 string parameter error!
+// @Failure 500 string Internal error!
+// @Router /seller [post]
 func (handler *Handler) AddProductByUserId(c *gin.Context) {
 	var product = new(model.Product)
 
@@ -52,9 +74,22 @@ func (handler *Handler) AddProductByUserId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Created new product successfully!")
+	c.JSON(200, dataResponse{Data: "Created new product successfully!"})
 }
 
+// @Summary Update Product
+// @Tags Seller
+// @Description update product
+// @ModuleID updateProduct
+// @Accept json
+// @Produce json
+// @Param name formData string true "name"
+// @Param description formData string true "description"
+// @Param categories formData model.Category true "category"
+// @Success 200 {object} dataResponse{data=string} "Updated the product successfully!"
+// @Failure 500 string parameter error!
+// @Failure 500 string Internal error
+// @Router /seller/:productId [put]
 func (handler *Handler) UpdateProduct(c *gin.Context) {
 	var product = new(model.Product)
 
@@ -70,9 +105,19 @@ func (handler *Handler) UpdateProduct(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Updated the product successfully!")
+	c.JSON(200, dataResponse{Data: "Updated the product successfully!"})
 }
 
+// @Summary Delete Product
+// @Tags Seller
+// @Description delete product by user id
+// @ModuleID deleteproductByUserId
+// @Accept json
+// @Produce json
+// @Param productId path string true "product id"
+// @Success 200 {object} dataResponse{data=string} "Deleted new product successfully!"
+// @Failure 500 string Internal error!
+// @Router /seller/:productId [delete]
 func (handler *Handler) DeleteProductByUserId(c *gin.Context) {
 	uid64, _ := strconv.ParseUint(c.Params.ByName("productId"), 10, 64)
 	productId := uint(uid64)
@@ -85,5 +130,5 @@ func (handler *Handler) DeleteProductByUserId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Deleted new product successfully!")
+	c.JSON(200, dataResponse{Data: "Deleted new product successfully!"})
 }

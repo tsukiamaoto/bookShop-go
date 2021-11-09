@@ -22,15 +22,33 @@ func (handler *Handler) initProductRoutes(api *gin.RouterGroup, conf *config.Con
 	}
 }
 
+// @Summary Get ProductList
+// @Tags Product
+// @Description get product list
+// @ModuleID getProductList
+// @Accept json
+// @Produce json
+// @Success 200 {object} dataResponse{data=[]model.Product} "get products"
+// @Failure 500 string parameter error!
+// @Router /product [get]
 func (handler *Handler) GetProductList(c *gin.Context) {
 	if productList, err := handler.services.Products.GetProductList(); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
-		c.JSON(200, productList)
+		c.JSON(200, dataResponse{Data: productList})
 	}
 }
 
+// @Summary Get Product
+// @Tags Product
+// @Description get product by product id
+// @ModuleID getProductById
+// @Accept json
+// @Produce json
+// @Success 200 {object} dataResponse{data=model.Product} "get the product"
+// @Failure 500 string parameter error!
+// @Router /product/:productId [get]
 func (handler *Handler) GetProductById(c *gin.Context) {
 	uid64, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
 	productId := uint(uid64)
@@ -39,6 +57,6 @@ func (handler *Handler) GetProductById(c *gin.Context) {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
-		c.JSON(200, product)
+		c.JSON(200, dataResponse{Data: product})
 	}
 }

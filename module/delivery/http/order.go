@@ -22,16 +22,34 @@ func (handler *Handler) initOrderRoutes(api *gin.RouterGroup, conf *config.Confi
 	}
 }
 
+// @Summary Get Order
+// @Tags Order
+// @Description get order by user id
+// @ModuleID getOrderByUserId
+// @Accept json
+// @Produce json
+// @Success 200 {object} dataResponse{data=model.Order} "get the order"
+// @Failure 500 string parameter error!
+// @Router /order [get]
 func (handler *Handler) GetOrderByUserId(c *gin.Context) {
 	userId, _ := middleware.GetUserId(c)
 	if order, err := handler.services.Orders.GetOrderByUserId(userId); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
-		c.JSON(200, order)
+		c.JSON(200, dataResponse{Data: order})
 	}
 }
 
+// @Summary Add OrderItem
+// @Tags Order
+// @Description add order item by user id
+// @ModuleID addOrderItemByUserId
+// @Accept json
+// @Produce json
+// @Success 200 {object} dataResponse{data=string} "Created orderItem successfully!"
+// @Failure 500 string parameter error!
+// @Router /order [post]
 func (handler *Handler) AddOrderItemByUserId(c *gin.Context) {
 	var (
 		orderItem = new(model.OrderItem)
@@ -57,5 +75,5 @@ func (handler *Handler) AddOrderItemByUserId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, "Created orderItem successfully!")
+	c.JSON(200, dataResponse{Data: "Created orderItem successfully!"})
 }
