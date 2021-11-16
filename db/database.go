@@ -13,8 +13,8 @@ import (
 
 func DbConnect(conf *config.Config) *gorm.DB {
 
-	// open default db
-	db, err := gorm.Open(postgres.Open(conf.Databases["default"].Source))
+	// connected to postgres db just to be able create db statement
+	postgresDB, err := gorm.Open(postgres.Open(conf.Databases["default"].Source))
 	if err != nil {
 		fmt.Println("使用 gorm 連線 DB 發生錯誤，原因為", err)
 		log.Error(err)
@@ -22,7 +22,7 @@ func DbConnect(conf *config.Config) *gorm.DB {
 
 	// created traget database and connection to target
 	dbExec := fmt.Sprintf("CREATE DATABASE %s;", conf.Databases["shopCart"].Name)
-	if err := db.Exec(dbExec).Error; err != nil {
+	if err := postgresDB.Exec(dbExec); err != nil {
 		fmt.Printf("無法建立 %s 資料庫，連線該資料庫\n", conf.Databases["shopCart"].Name)
 		conn, err := gorm.Open(postgres.Open(conf.Databases["shopCart"].Source))
 		if err != nil {

@@ -49,7 +49,7 @@ func LoadConfig() *Config {
 	allowOrigins := viper.GetStringSlice("application.cors.allowOrigins")
 
 	config := &Config{
-		Databases:      dbs,
+		Databases:     dbs,
 		ServerAddress: serverAddress,
 		Redis:         redis,
 		AllowOrigins:  allowOrigins,
@@ -59,6 +59,7 @@ func LoadConfig() *Config {
 }
 
 func getDatabase(name string) *Database {
+	dbName := viper.GetString(fmt.Sprintf("databases.%s.dbname", name))
 	source := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable TimeZone=Asia/Taipei",
 		viper.GetString(fmt.Sprintf("databases.%s.host", name)),
 		viper.GetInt(fmt.Sprintf("databases.%s.port", name)),
@@ -68,7 +69,7 @@ func getDatabase(name string) *Database {
 	)
 
 	return &Database{
-		Name: name,
+		Name:   dbName,
 		Source: source,
 	}
 }
