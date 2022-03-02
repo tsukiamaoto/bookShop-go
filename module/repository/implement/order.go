@@ -17,14 +17,13 @@ func NewOrderRepository(db *gorm.DB) *OrderRepository {
 }
 
 func (o *OrderRepository) GetOrderByUserId(userId uint) (*model.Order, error) {
-	var (
-		err   error
-		order *model.Order
-	)
+	var order *model.Order
+	// get order details
+	if err := o.db.Model(&model.Order{}).Where("user_id = ?", userId).Preload("OrderItems.Product").Preload("OrderItems.Category").Preload("OrderItems.Product.Categories").Find(&order).Error; err != nil {
+		return nil, err
+	}
 
-	err = o.db.Model(&model.Order{UserID: userId}).Find(&order).Error
-
-	return order, err
+	return order, nil
 }
 
 func (o *OrderRepository) CreateOrderWithUserId(userId uint) error {
@@ -33,16 +32,29 @@ func (o *OrderRepository) CreateOrderWithUserId(userId uint) error {
 	return err
 }
 
-func (o *OrderRepository) AddOrderItemByUserId(orderItem *model.OrderItem, userId uint) error {
-	// create orderItem
-	if err := o.db.Create(&orderItem).Error; err != nil {
+func (o *OrderRepository) UpdateOrderByUserId(order *model.Order, userId uint) error {
+	// found orderId
+	var orderId uint
+	if err := o.db.Model(&model.Order{}).Where("user_id = ?", userId).Select("id").First(&orderId).Error; err != nil {
 		return err
 	}
 
-	// append the orderItem to order
-	err := o.db.Model(&model.Order{UserID: userId}).Association("OrderItems").Append(orderItem)
+	// created OrderItem instances
+	var orderItems = make([]model.OrderItem, 0)
+	for _, orderItem := range order.OrderItems {
+		orderItem.OrderID = orderId
+		orderItems = append(orderItems, orderItem)
+	}
+	if err := o.db.Model(&model.OrderItem{}).Create(&orderItems).Error; err != nil {
+		return err
+	}
 
-	return err
+	// appended orderItems to order
+	if err := o.db.Model(&model.Order{ID: orderId, UserID: userId}).Omit("OrderItems.*").Association("OrderItems").Append(&orderItems); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (o *OrderRepository) UpdateTotalByOrderItemAndUserId(orderItem *model.OrderItem, userId uint) error {

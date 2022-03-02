@@ -19,7 +19,7 @@ func (handler *Handler) initSellerRoutes(api *gin.RouterGroup, conf *config.Conf
 	)
 	{
 		sellers.GET("", handler.GetProductListByUserId)
-		sellers.POST("", handler.AddOrderItemByUserId)
+		sellers.POST("", handler.AddProductByUserId)
 		sellers.PUT("/:productId", handler.UpdateProduct)
 		sellers.DELETE("/:productId", handler.DeleteProductByUserId)
 	}
@@ -74,7 +74,7 @@ func (handler *Handler) AddProductByUserId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, dataResponse{Data: "Created new product successfully!"})
+	c.JSON(200, dataResponse{Data: "Created a new product successfully!"})
 }
 
 // @Summary Update Product
@@ -91,6 +91,9 @@ func (handler *Handler) AddProductByUserId(c *gin.Context) {
 // @Failure 500 string Internal error
 // @Router /seller/:productId [put]
 func (handler *Handler) UpdateProduct(c *gin.Context) {
+	uid64, _ := strconv.ParseUint(c.Params.ByName("productId"), 10, 64)
+	productId := uint(uid64)
+
 	var product = new(model.Product)
 
 	if err := c.ShouldBind(&product); err != nil || product == nil {
@@ -98,6 +101,7 @@ func (handler *Handler) UpdateProduct(c *gin.Context) {
 		c.JSON(500, "parameter error!")
 		return
 	}
+	product.ID = productId
 
 	if err := handler.services.Sellers.UpdateProduct(product); err != nil {
 		log.Error(err)
@@ -130,5 +134,5 @@ func (handler *Handler) DeleteProductByUserId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, dataResponse{Data: "Deleted new product successfully!"})
+	c.JSON(200, dataResponse{Data: "Deleted the product successfully!"})
 }

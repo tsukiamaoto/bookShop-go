@@ -217,6 +217,13 @@ func (handler *Handler) Signup(c *gin.Context) {
 		return
 	}
 	userId := newUser.ID
+	
+	// create seller instance and associate with user
+	if err := handler.services.Sellers.CreateSellerWithUserId(userId); err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
 
 	//create cart instance and associate with user
 	if err := handler.services.Carts.CreateCartWithUserId(userId); err != nil {
@@ -233,8 +240,7 @@ func (handler *Handler) Signup(c *gin.Context) {
 	}
 
 	// save userID into session
-	uid64 := uint64(userId)
-	strUserId := strconv.FormatUint(uid64, 10)
+	strUserId := strconv.FormatUint(uint64(userId), 10)
 	if err := middleware.SaveToRedis(c, "userId", strUserId); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())

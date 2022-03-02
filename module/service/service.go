@@ -16,22 +16,23 @@ type Users interface {
 }
 
 type Carts interface {
-	GetCartItemListByUserId(userId uint) ([]*model.CartItem, error)
+	GetCartByUserId(userId uint) (*model.Cart, error)
 	CreateCartWithUserId(userId uint) error
 	AddCartItemByUserId(cartItem *model.CartItem, userId uint) error
 	UpdateCartItemById(cartItem *model.CartItem, cartItemId uint) error
-	DeleteCartItem(cartItemId uint) error
+	DeleteCartItem(userId uint, cartItemId uint) error
 }
 
 type Orders interface {
 	GetOrderByUserId(userId uint) (*model.Order, error)
 	CreateOrderWithUserId(userId uint) error
-	AddOrderItemByUserId(orderItem *model.OrderItem, userId uint) error
+	UpdateOrderByUserId(order *model.Order, userId uint) error
 	UpdateTotalByOrderItemAndUserId(orderItem *model.OrderItem, userId uint) error
 }
 
 type Sellers interface {
 	GetProductListByUserId(userId uint) ([]*model.Product, error)
+	CreateSellerWithUserId(userId uint) error
 	AddProductByUserId(product *model.Product, userId uint) error
 	UpdateProduct(product *model.Product) error
 	DeleteProductByUserId(productId, userId uint) error

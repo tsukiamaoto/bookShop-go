@@ -18,7 +18,7 @@ func (handler *Handler) initCartRoutes(api *gin.RouterGroup, conf *config.Config
 		middleware.AuthRequired,
 	)
 	{
-		carts.GET("", handler.GetCartItemListByUserId)
+		carts.GET("", handler.GetCartByUserId)
 		carts.POST("", handler.AddCartItemByUserId)
 		carts.PUT("/:cartItemId", handler.UpdateCartItemById)
 		carts.DELETE("/:cartItemId", handler.DeleteCartItem)
@@ -28,15 +28,15 @@ func (handler *Handler) initCartRoutes(api *gin.RouterGroup, conf *config.Config
 // @Summary Get CartItem List
 // @Tags Cart
 // @Description get cart item list by user id
-// @ModuleID getCartItemListByUserId
+// @ModuleID GetCartByUserId
 // @Accept json
 // @Produce json
-// @Success 200 {object} dataResponse{data=[]model.CartItem} "get cartItems"
+// @Success 200 {object} dataResponse{data=model.Cart} "get cart"
 // @Failure 500 string Internal error
 // @Router /cart [get]
-func (handler *Handler) GetCartItemListByUserId(c *gin.Context) {
+func (handler *Handler) GetCartByUserId(c *gin.Context) {
 	userId, _ := middleware.GetUserId(c)
-	if cartItemList, err := handler.services.Carts.GetCartItemListByUserId(userId); err != nil {
+	if cartItemList, err := handler.services.Carts.GetCartByUserId(userId); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
@@ -122,7 +122,9 @@ func (handler *Handler) DeleteCartItem(c *gin.Context) {
 	uid64, _ := strconv.ParseUint(c.Params.ByName("cartItemId"), 10, 64)
 	cartItemId := uint(uid64)
 
-	if err := handler.services.Carts.DeleteCartItem(cartItemId); err != nil {
+	userId, _ := middleware.GetUserId(c)
+
+	if err := handler.services.Carts.DeleteCartItem(userId, cartItemId); err != nil {
 		log.Error(err)
 		c.JSON(500, "parameter error!")
 		return

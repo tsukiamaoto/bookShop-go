@@ -15,8 +15,8 @@ func NewCartsService(repo repo.Carts) *CartsService {
 	}
 }
 
-func (c *CartsService) GetCartItemListByUserId(userId uint) ([]*model.CartItem, error) {
-	return c.repo.GetCartItemListByUserId(userId)
+func (c *CartsService) GetCartByUserId(userId uint) (*model.Cart, error) {
+	return c.repo.GetCartByUserId(userId)
 }
 
 func (c *CartsService) CreateCartWithUserId(userId uint) error {
@@ -31,6 +31,6 @@ func (c *CartsService) UpdateCartItemById(cartItem *model.CartItem, cartItemId u
 	return c.repo.UpdateCartItemById(cartItem, cartItemId)
 }
 
-func (c *CartsService) DeleteCartItem(cartItemId uint) error {
-	return c.repo.DeleteCartItem(cartItemId)
+func (c *CartsService) DeleteCartItem(userId, cartItemId uint) error {
+	return c.repo.DeleteCartItem(userId, cartItemId)
 }

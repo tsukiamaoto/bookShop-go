@@ -2,9 +2,9 @@ package delivery
 
 import (
 	"shopCart/config"
+	docs "shopCart/docs"
 	v1 "shopCart/module/delivery/http"
 	"shopCart/module/service"
-	docs "shopCart/docs"
 
 	"fmt"
 
@@ -26,7 +26,7 @@ type UserHandler interface {
 }
 
 type CartHandler interface {
-	GetCartItemListByUserId(c *gin.Context)
+	GetCartByUserId(c *gin.Context)
 	AddCartItemByUserId(c *gin.Context)
 	UpdateCartItemById(c *gin.Context)
 	DeleteCartItem(c *gin.Context)
@@ -34,7 +34,7 @@ type CartHandler interface {
 
 type OrderHandler interface {
 	GetOrderByUserId(c *gin.Context)
-	AddOrderItemByUserId(c *gin.Context)
+	UpdateOrderByUserId(c *gin.Context)
 }
 
 type SellerHandler interface {

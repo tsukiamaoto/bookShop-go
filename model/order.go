@@ -7,22 +7,23 @@ import (
 )
 
 type Order struct {
-	ID        uint        `gorm:"primaryKey;uniqueIndex;autoIncrement"`
-	OderItems []OrderItem `gorm:"many2many:order_orderItems;"`
-	UserID    uint
-	User      User
-	Total     int `gorm:"default:0"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID         uint        `gorm:"primaryKey;uniqueIndex;autoIncrement"`
+	OrderItems []OrderItem `gorm:"many2many:order_orderItems;"`
+	UserID     uint        `gorm:"primaryKey"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt
 }
 
 type OrderItem struct {
-	ID        uint `gorm:"primaryKey;uniqueIndex;autoIncrement"`
-	ProductID uint
-	Product   Product `json:"product"`
-	Quantity  int     `json:"quantity"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt
+	ID         uint     `gorm:"primaryKey;uniqueIndex;autoIncrement"`
+	OrderID    uint     `gorm:"primaryKey"`
+	ProductID  uint     `json:"product_id"`
+	Product    Product  `json:"product"`
+	CategoryID uint     `json:"category_id"`
+	Category   Category `json:"category"`
+	Quantity   int      `json:"quantity"`
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	DeletedAt  gorm.DeletedAt
 }

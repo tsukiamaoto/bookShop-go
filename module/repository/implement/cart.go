@@ -16,15 +16,14 @@ func NewCartRepository(db *gorm.DB) *CartRepository {
 	}
 }
 
-func (c *CartRepository) GetCartItemListByUserId(userId uint) ([]*model.CartItem, error) {
-	var (
-		err       error
-		cartItems = make([]*model.CartItem, 0)
-	)
+func (c *CartRepository) GetCartByUserId(userId uint) (*model.Cart, error) {
+	var cart *model.Cart
 
-	err = c.db.Model(&model.Cart{UserID: userId}).Association("CartItems").Find(&cartItems)
+	if err := c.db.Model(&model.Cart{}).Where("user_id = ?", userId).Preload("CartItems.Product").Preload("CartItems.Category").Preload("CartItems.Product.Categories").First(&cart).Error; err != nil {
+		return nil, err
+	}
 
-	return cartItems, err
+	return cart, nil
 }
 
 func (c *CartRepository) CreateCartWithUserId(userId uint) error {
@@ -34,13 +33,20 @@ func (c *CartRepository) CreateCartWithUserId(userId uint) error {
 }
 
 func (c *CartRepository) AddCartItemByUserId(cartItem *model.CartItem, userId uint) error {
-	// create a cartItem
-	if err := c.db.Create(&cartItem).Error; err != nil {
+	// found cartId
+	var cartId uint
+	if err := c.db.Model(&model.Cart{}).Where("user_id = ?", userId).Select("id").First(&cartId).Error; err != nil {
 		return err
 	}
 
-	// add the cartItem to cart
-	if err := c.db.Model(&model.Cart{UserID: userId}).Association("CartItems").Append(&cartItem); err != nil {
+	// created a new cartItem
+	cartItem.CartID = cartId
+	if err := c.db.Model(&model.CartItem{}).Create(&cartItem).Error; err != nil {
+		return err
+	}
+
+	// appended the cartItem to cart
+	if err := c.db.Model(&model.Cart{ID: cartId, UserID: userId}).Omit("CartItems.*").Association("CartItems").Append(cartItem); err != nil {
 		return err
 	}
 
@@ -48,14 +54,36 @@ func (c *CartRepository) AddCartItemByUserId(cartItem *model.CartItem, userId ui
 }
 
 func (c *CartRepository) UpdateCartItemById(cartItem *model.CartItem, cartItemId uint) error {
-	// find the cartItem and update
-	err := c.db.Model(&model.CartItem{ID: cartItemId}).Updates(cartItem).Error
+	// found the cartItem and update
+	if err := c.db.Model(&model.CartItem{ID: cartItemId}).Updates(&cartItem).Error; err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
 
-func (c *CartRepository) DeleteCartItem(cartItemId uint) error {
-	err := c.db.Delete(&model.CartItem{ID: cartItemId}).Error
+func (c *CartRepository) DeleteCartItem(userId, cartItemId uint) error {
+	// found cartId
+	var cartId uint
+	if err := c.db.Model(&model.Cart{}).Where("user_id = ?", userId).Select("id").First(&cartId).Error; err != nil {
+		return err
+	}
 
-	return err
+	// found cartItem
+	var cartItem *model.CartItem
+	if err := c.db.Model(&model.CartItem{}).Where("id = ?", cartItemId).First(&cartItem).Error; err != nil {
+		return err
+	}
+
+	// removed the cartItem relationshop with the cart
+	if err := c.db.Model(&model.Cart{ID: cartId, UserID: userId}).Association("CartItems").Delete(cartItem); err != nil {
+		return err
+	}
+
+	// deleted cartItem object
+	if err := c.db.Delete(cartItem).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

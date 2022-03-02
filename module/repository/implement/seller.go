@@ -1,6 +1,7 @@
 package implement
 
 import (
+	"reflect"
 	"shopCart/model"
 
 	"gorm.io/gorm"
@@ -17,40 +18,82 @@ func NewSellerRepository(db *gorm.DB) *SellerRepository {
 }
 
 func (s *SellerRepository) GetProductListByUserId(userId uint) ([]*model.Product, error) {
-	var (
-		err      error
-		products = make([]*model.Product, 0)
-	)
+	var seller model.Seller
+	if err := s.db.Model(&model.Seller{UserID: userId}).Find(&seller).Error; err != nil {
+		return nil, err
+	}
 
-	err = s.db.Model(&model.Seller{UserId: userId}).Association("Products").Find(&products)
+	if err := s.db.Preload("Products.Categories").Find(&seller).Error; err != nil {
+		return nil, err
+	}
 
-	return products, err
+	products := seller.Products
+
+	return products, nil
+}
+
+func (s *SellerRepository) CreateSellerWithUserId(userId uint) error {
+	err := s.db.Create(&model.Seller{UserID: userId}).Error
+
+	return err
 }
 
 func (s *SellerRepository) AddProductByUserId(product *model.Product, userId uint) error {
-	// create categories and update categories id
-	// categories := product.Categories
-	// if err := s.db.Create(&categories).Error; err != nil{
-	// 	return err
-	// }
-	// product.Categories = categories
-
-	// create prodcut
-	if err := s.db.Create(&product).Error; err != nil {
+	// found seller by userId
+	var seller *model.Seller
+	if err := s.db.Model(&model.Seller{UserID: userId}).First(&seller).Error; err != nil {
 		return err
 	}
 
-	// add a product association with seller products
-	err := s.db.Model(&model.Seller{UserId: userId}).Association("Products").Append(product)
+	// added a new product assocation with seller
+	if err := s.db.Model(&seller).Association("Products").Append(product); err != nil {
+		return err
+	}
 
-	return err
+	// added categories assocation with product
+	if err := s.db.Model(&product).Association("Categories").Replace(&product.Categories); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *SellerRepository) UpdateProduct(product *model.Product) error {
-	// update product
-	err := s.db.Model(&model.Product{ID: product.ID}).Updates(&product).Error
+	var categories = make([]model.Category, 0)
+	var updatedCategories = make([]model.Category, 0)
 
-	return err
+	// find all origin categories of the product
+	if err := s.db.Model(&model.Product{ID: product.ID}).Association("Categories").Find(&categories); err != nil {
+		return err
+	}
+
+	// find updated categories
+	for _, pCategory := range product.Categories {
+		for _, category := range categories {
+			if !(category.Type == pCategory.Type) ||
+				!(category.Price == pCategory.Price) ||
+				!(category.Inventory == pCategory.Inventory) {
+				updatedCategories = append(updatedCategories, pCategory)
+				break
+			}
+			if !reflect.DeepEqual(category.Images, pCategory.Images) {
+				updatedCategories = append(updatedCategories, pCategory)
+				break
+			}
+		}
+	}
+
+	// ignored categories to update product
+	if err := s.db.Model(&model.Product{ID: product.ID}).Omit("Categories").Updates(&product).Error; err != nil {
+		return err
+	}
+
+	// replaced origin categories of product to upated categories
+	if err := s.db.Model(&model.Product{ID: product.ID}).Association("Categories").Replace(&updatedCategories); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *SellerRepository) DeleteProductByUserId(productId, userId uint) error {
@@ -60,7 +103,7 @@ func (s *SellerRepository) DeleteProductByUserId(productId, userId uint) error {
 	}
 
 	// delete product association with seller
-	err := s.db.Model(&model.Seller{UserId: userId}).Association("Products").Delete(&model.Product{ID: productId})
+	err := s.db.Model(&model.Seller{UserID: userId}).Association("Products").Delete(&model.Product{ID: productId})
 
 	return err
 }

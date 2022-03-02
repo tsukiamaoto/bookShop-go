@@ -23,8 +23,8 @@ func (o *OrdersService) CreateOrderWithUserId(userId uint) error {
 	return o.repo.CreateOrderWithUserId(userId)
 }
 
-func (o *OrdersService) AddOrderItemByUserId(orderItem *model.OrderItem, userId uint) error {
-	return o.repo.AddOrderItemByUserId(orderItem, userId)
+func (o *OrdersService) UpdateOrderByUserId(order *model.Order, userId uint) error {
+	return o.repo.UpdateOrderByUserId(order, userId)
 }
 
 func (o *OrdersService) UpdateTotalByOrderItemAndUserId(orderItem *model.OrderItem, userId uint) error {

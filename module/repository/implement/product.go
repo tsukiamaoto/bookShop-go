@@ -22,14 +22,16 @@ func (p *ProductRepository) GetProductList() ([]*model.Product, error) {
 		products = make([]*model.Product, 0)
 	)
 
-	err = p.db.Model(&model.Product{}).Find(&products).Error
+	if err = p.db.Preload("Categories").Find(&products).Error; err != nil {
+		return nil, err
+	}
 
-	return products, err
+	return products, nil
 }
 
 func (p *ProductRepository) GetProductById(productId uint) (*model.Product, error) {
 	var product *model.Product
-	err := p.db.Model(&model.Product{ID: productId}).First(&product).Error
+	err := p.db.Preload("Categories").Model(&model.Product{ID: productId}).First(&product).Error
 
 	return product, err
 }

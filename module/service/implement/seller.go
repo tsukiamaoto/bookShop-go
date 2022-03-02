@@ -19,6 +19,10 @@ func (s *SellersService) GetProductListByUserId(userId uint) ([]*model.Product, 
 	return s.repo.GetProductListByUserId(userId)
 }
 
+func (s *SellersService) CreateSellerWithUserId(userId uint) error {
+	return s.repo.CreateSellerWithUserId(userId)
+}
+
 func (s *SellersService) AddProductByUserId(product *model.Product, userId uint) error {
 	return s.repo.AddProductByUserId(product, userId)
 }
