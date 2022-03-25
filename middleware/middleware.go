@@ -63,6 +63,22 @@ func AuthRequired(c *gin.Context) {
 	c.Next()
 }
 
+func GetAuth(c *gin.Context) (bool, error) {
+	var isLogined bool
+	
+	session, err := store.Get(c.Request, "session-key")
+	if err != nil {
+		log.Error("Failed to get session, reason is :", err)
+		return false, err
+	}
+
+	if session.Values["auth"] == true {
+		isLogined = true
+	}
+
+	return isLogined, nil
+}
+
 func SetAuth(c *gin.Context) error {
 	session, err := store.Get(c.Request, "session-key")
 	if err != nil {

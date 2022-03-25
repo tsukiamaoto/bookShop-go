@@ -142,25 +142,46 @@ func (handler *Handler) DeleteUser(c *gin.Context) {
 // @Failure 500 string error message
 // @Router /user/login [post]
 func (handler *Handler) Login(c *gin.Context) {
-	var user = new(model.User)
-	if err := c.ShouldBind(&user); err != nil || user == nil {
+	var (
+		user = new(model.User)
+		isLogined = false
+		err error
+	)
+
+	// checked whatever session-key existed or not
+	if isLogined, err = middleware.GetAuth(c); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 
-	if _, err := handler.services.Users.GetUser(user); err != nil {
+	if(isLogined) {
+		c.JSON(200, gin.H{
+			"isLogined": isLogined,
+		})
+		return 
+	}
+
+	if err = c.ShouldBind(&user); err != nil || user == nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
+
+	if _, err = handler.services.Users.GetUser(user); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 
 	if err := middleware.SetAuth(c); err != nil {
+		log.Error(err)
 		c.JSON(500, err.Error())
+		return
 	}
 
 	c.JSON(200, gin.H{
-		"isLogined": true,
+		"isLogined": isLogined,
 	})
 }
 
