@@ -155,26 +155,30 @@ func (handler *Handler) Login(c *gin.Context) {
 		return
 	}
 
+	// if session-key existed
 	if isLogined {
 		c.JSON(200, gin.H{
 			"isLogined": isLogined,
 		})
-		return
 	}
 
+	// examinedd user format is correct
 	if err = c.ShouldBind(&user); err != nil || user == nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 
+	// checked whatever user existed or not
 	if _, err = handler.services.Users.GetUser(user); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
+	isLogined = true
 
-	if err := middleware.SetAuth(c); err != nil {
+	// set auth to session
+	if err = middleware.SetAuth(c); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
