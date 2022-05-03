@@ -1,32 +1,28 @@
 application:
-  timeout:
-    read: 1000
-    write: 1000
   port: 8080
-  host: "localhost"
+  host: "bookShop"
   uploadPath: "./upload"
-  mode: "debug"
-  appId: "go"
+  mode: "dev"
   apiBaseRoute: "/api"
   cors:
-    allowOrigins: ["http://localhost:3000"]
+    allowOrigins: ["http://bookShop:3000"]
   
 databases:
   shopCart:
-    host: "localhost"
+    host: "postgresql"
     port: 5432
-    user: "postgres"
-    password: 9955
+    user: "test"
+    password: "secret"
     dbname: "shop_cart"
 
-  default:
-    host: "localhost"
-    port: 5432
-    user: "postgres"
-    password: 9955
-    dbname: "postgres"
+  # default:
+  #   host: "localhost"
+  #   port: 5432
+  #   user: "postgres"
+  #   password: 9955
+  #   dbname: "postgres"
 
 redis:
-  host: "127.0.0.1:6379"
+  host: "redis:6379"
   password: ""
   db: 0

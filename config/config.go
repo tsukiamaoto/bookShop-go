@@ -61,11 +61,11 @@ func LoadConfig() *Config {
 
 func getDatabase(name string) *Database {
 	dbName := viper.GetString(fmt.Sprintf("databases.%s.dbname", name))
-	source := fmt.Sprintf("host=%s port=%d user=%s password=%d dbname=%s sslmode=disable TimeZone=Asia/Taipei",
+	source := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Taipei",
 		viper.GetString(fmt.Sprintf("databases.%s.host", name)),
 		viper.GetInt(fmt.Sprintf("databases.%s.port", name)),
 		viper.GetString(fmt.Sprintf("databases.%s.user", name)),
-		viper.GetInt(fmt.Sprintf("databases.%s.password", name)),
+		viper.GetString(fmt.Sprintf("databases.%s.password", name)),
 		viper.GetString(fmt.Sprintf("databases.%s.dbname", name)),
 	)
 

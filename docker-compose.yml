@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: bookShop
+    build: 
+      context: .
+    restart: always
+    ports:
+      - '8080:8080'
+    networks:
+      - backend
+      - redis
+      - postgresql
+
+networks:
+  backend:
+    name: bookShop-net
+    driver: bridge
+  postgresql:
+    name: book-crawler-go-net
+    external: true
+  redis: 
+    name: proxy-server-net
+    external: true
