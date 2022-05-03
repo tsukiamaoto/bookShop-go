@@ -26,7 +26,7 @@ func main() {
 	repos := repository.NewRepositories(conn)
 
 	// create service instance
-	services := service.NewServices(service.Deps{
+	services := service.NewServices(service.Repos{
 		Repos: repos,
 	})
 

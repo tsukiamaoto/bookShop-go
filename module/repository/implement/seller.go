@@ -70,7 +70,7 @@ func (s *SellerRepository) UpdateProduct(product *model.Product) error {
 	// find updated categories
 	for _, pCategory := range product.Categories {
 		for _, category := range categories {
-			if !(category.Type == pCategory.Type) ||
+			if !reflect.DeepEqual(category, pCategory) ||
 				!(category.Price == pCategory.Price) ||
 				!(category.Inventory == pCategory.Inventory) {
 				updatedCategories = append(updatedCategories, pCategory)

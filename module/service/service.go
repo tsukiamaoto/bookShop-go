@@ -51,16 +51,16 @@ type Services struct {
 	Products Products
 }
 
-type Deps struct {
+type Repos struct {
 	Repos *repo.Repositories
 }
 
-func NewServices(deps Deps) *Services {
-	usersService := service.NewUsersService(deps.Repos.Users)
-	cartsService := service.NewCartsService(deps.Repos.Carts)
-	ordersService := service.NewOrdersService(deps.Repos.Orders)
-	sellersService := service.NewSellersService(deps.Repos.Sellers)
-	productsService := service.NewProductsService(deps.Repos.Products)
+func NewServices(repos Repos) *Services {
+	usersService := service.NewUsersService(repos.Repos.Users)
+	cartsService := service.NewCartsService(repos.Repos.Carts)
+	ordersService := service.NewOrdersService(repos.Repos.Orders)
+	sellersService := service.NewSellersService(repos.Repos.Sellers)
+	productsService := service.NewProductsService(repos.Repos.Products)
 
 	return &Services{
 		Users:    usersService,
