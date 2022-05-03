@@ -6,7 +6,6 @@ import (
 	"tsukiamaoto/bookShop-go/middleware"
 	"tsukiamaoto/bookShop-go/model"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -14,7 +13,6 @@ import (
 func (handler *Handler) initSellerRoutes(api *gin.RouterGroup, conf *config.Config) {
 	sellers := api.Group("/seller")
 	sellers.Use(
-		cors.New(middleware.CorsConfig(conf)),
 		middleware.AuthRequired,
 	)
 	{

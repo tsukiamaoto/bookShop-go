@@ -3,19 +3,13 @@ package http
 import (
 	"strconv"
 	"tsukiamaoto/bookShop-go/config"
-	"tsukiamaoto/bookShop-go/middleware"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
 func (handler *Handler) initProductRoutes(api *gin.RouterGroup, conf *config.Config) {
 	products := api.Group("/product")
-	products.Use(
-		cors.New(middleware.CorsConfig(conf)),
-		middleware.AuthRequired,
-	)
 	{
 		products.GET("", handler.GetProductList)
 		products.GET("/:productId", handler.GetProductById)

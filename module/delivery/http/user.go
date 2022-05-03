@@ -7,7 +7,6 @@ import (
 
 	"strconv"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,14 +19,15 @@ func (handler *Handler) initUserRoutes(api *gin.RouterGroup, conf *config.Config
 		users.POST("/logout", handler.Logout)
 
 		authenticated := users.Use(
-			cors.New(middleware.CorsConfig(conf)),
 			middleware.AuthRequired,
 		)
+
 		{
 			authenticated.GET("", handler.GetUserList)
 			authenticated.GET("/:id", handler.GetUser)
 			authenticated.PUT("/:id", handler.UpdateUser)
 			authenticated.DELETE("/:id", handler.DeleteUser)
+
 		}
 	}
 }

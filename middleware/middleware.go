@@ -37,11 +37,19 @@ func init() {
 
 func CorsConfig(conf *config.Config) cors.Config {
 	corsConf := cors.DefaultConfig()
-	corsConf.AllowOrigins = conf.AllowOrigins
-	// corsConf.AllowCredentials = true
-	// corsConf.AllowAllOrigins = true
-	corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
-		"Connection", "Accept-Encoding", "Accept-Language", "Host", "Access-Control-Request-Method", "Access-Control-Request-Headers"}
+	if conf.Mode == "dev" {
+		corsConf.AllowCredentials = true
+		corsConf.AllowAllOrigins = true
+		corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}
+		corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
+			"Connection", "Accept-Encoding", "Accept-Language", "Host", "Access-Control-Request-Method", "Access-Control-Request-Headers"}
+	} else {
+		corsConf.AllowCredentials = true
+		corsConf.AllowOrigins = conf.AllowOrigins
+		corsConf.AllowMethods = []string{"GET", "POST", "DELETE", "OPTIONS", "PUT"}
+		corsConf.AllowHeaders = []string{"Authorization", "Content-Type", "Upgrade", "Origin",
+			"Connection", "Accept-Encoding", "Accept-Language", "Host", "Access-Control-Request-Method", "Access-Control-Request-Headers"}
+	}
 
 	return corsConf
 }

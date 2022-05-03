@@ -17,6 +17,7 @@ type Config struct {
 	ServerAddress string
 	AllowOrigins  []string
 	Redis         *Redis
+	Mode          string
 }
 
 type Database struct {
@@ -48,12 +49,14 @@ func LoadConfig() *Config {
 		DB:       viper.GetInt("redis.db"),
 	}
 	allowOrigins := viper.GetStringSlice("application.cors.allowOrigins")
+	mode := viper.GetString("application.mode")
 
 	config := &Config{
 		Databases:     dbs,
 		ServerAddress: serverAddress,
 		Redis:         redis,
 		AllowOrigins:  allowOrigins,
+		Mode:          mode,
 	}
 
 	return config

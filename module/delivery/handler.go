@@ -3,11 +3,13 @@ package delivery
 import (
 	"tsukiamaoto/bookShop-go/config"
 	docs "tsukiamaoto/bookShop-go/docs"
+	"tsukiamaoto/bookShop-go/middleware"
 	v1 "tsukiamaoto/bookShop-go/module/delivery/http"
 	"tsukiamaoto/bookShop-go/module/service"
 
 	"fmt"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -63,9 +65,12 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) Init(conf *config.Config) *gin.Engine {
 	// create server
 	router := gin.Default()
+	router.Use(
+		cors.New(middleware.CorsConfig(conf)),
+	)
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
-	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%s", "localhost", 8080)
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s:%d", "localhost", 8080)
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
