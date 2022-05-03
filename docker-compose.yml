@@ -9,17 +9,17 @@ services:
     ports:
       - '8080:8080'
     networks:
-      - backend
+      - bookShop
       - redis
       - postgresql
 
 networks:
-  backend:
-    name: bookShop-net
+  bookShop:
+    name: bookShop
     driver: bridge
   postgresql:
-    name: book-crawler-go-net
+    name: postgresql
     external: true
   redis: 
-    name: proxy-server-net
+    name: redis
     external: true
