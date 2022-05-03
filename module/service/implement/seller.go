@@ -1,8 +1,8 @@
 package implement
 
 import (
-	"shopCart/model"
-	repo "shopCart/module/repository"
+	"tsukiamaoto/bookShop-go/model"
+	repo "tsukiamaoto/bookShop-go/module/repository"
 )
 
 type SellersService struct {

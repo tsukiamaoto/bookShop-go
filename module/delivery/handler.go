@@ -1,10 +1,10 @@
 package delivery
 
 import (
-	"shopCart/config"
-	docs "shopCart/docs"
-	v1 "shopCart/module/delivery/http"
-	"shopCart/module/service"
+	"tsukiamaoto/bookShop-go/config"
+	docs "tsukiamaoto/bookShop-go/docs"
+	v1 "tsukiamaoto/bookShop-go/module/delivery/http"
+	"tsukiamaoto/bookShop-go/module/service"
 
 	"fmt"
 

@@ -1,9 +1,9 @@
 package service
 
 import (
-	"shopCart/model"
-	repo "shopCart/module/repository"
-	service "shopCart/module/service/implement"
+	"tsukiamaoto/bookShop-go/model"
+	repo "tsukiamaoto/bookShop-go/module/repository"
+	service "tsukiamaoto/bookShop-go/module/service/implement"
 )
 
 type Users interface {

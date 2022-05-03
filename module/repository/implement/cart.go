@@ -1,7 +1,7 @@
 package implement
 
 import (
-	"shopCart/model"
+	"tsukiamaoto/bookShop-go/model"
 
 	"gorm.io/gorm"
 )

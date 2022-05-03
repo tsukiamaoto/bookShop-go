@@ -1,7 +1,7 @@
 package server
 
-import(
-	"shopCart/config"
+import (
+	"tsukiamaoto/bookShop-go/config"
 
 	"net/http"
 )

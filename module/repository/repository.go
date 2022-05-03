@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"shopCart/model"
-	repo "shopCart/module/repository/implement"
+	"tsukiamaoto/bookShop-go/model"
+	repo "tsukiamaoto/bookShop-go/module/repository/implement"
 
 	"gorm.io/gorm"
 )

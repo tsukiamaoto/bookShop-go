@@ -2,8 +2,8 @@ package db
 
 import (
 	"fmt"
-	"shopCart/config"
-	"shopCart/model"
+	"tsukiamaoto/bookShop-go/config"
+	"tsukiamaoto/bookShop-go/model"
 
 	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
@@ -12,28 +12,14 @@ import (
 )
 
 func DbConnect(conf *config.Config) *gorm.DB {
-
-	// connected to postgres db just to be able create db statement
-	postgresDB, err := gorm.Open(postgres.Open(conf.Databases["default"].Source))
+	conn, err := gorm.Open(postgres.Open(conf.Databases["shopCart"].Source))
 	if err != nil {
 		fmt.Println("使用 gorm 連線 DB 發生錯誤，原因為", err)
 		log.Error(err)
+		return nil
 	}
 
-	// created traget database and connection to target
-	dbExec := fmt.Sprintf("CREATE DATABASE %s;", conf.Databases["shopCart"].Name)
-	if err := postgresDB.Exec(dbExec); err != nil {
-		fmt.Printf("無法建立 %s 資料庫，連線該資料庫\n", conf.Databases["shopCart"].Name)
-		conn, err := gorm.Open(postgres.Open(conf.Databases["shopCart"].Source))
-		if err != nil {
-			fmt.Println("使用 gorm 連線 DB 發生錯誤，原因為", err)
-			log.Error(err)
-		}
-
-		return conn
-	}
-
-	return nil
+	return conn
 }
 
 func AutoMigrate(db *gorm.DB) {

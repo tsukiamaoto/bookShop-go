@@ -1,13 +1,13 @@
 package main
 
 import (
-	"shopCart/config"
-	"shopCart/db"
-	"shopCart/module/delivery"
-	"shopCart/module/repository"
-	"shopCart/module/service"
-	"shopCart/module/server"
-	"shopCart/redis"
+	"tsukiamaoto/bookShop-go/config"
+	"tsukiamaoto/bookShop-go/db"
+	"tsukiamaoto/bookShop-go/module/delivery"
+	"tsukiamaoto/bookShop-go/module/repository"
+	"tsukiamaoto/bookShop-go/module/server"
+	"tsukiamaoto/bookShop-go/module/service"
+	"tsukiamaoto/bookShop-go/redis"
 )
 
 func init() {
@@ -32,7 +32,7 @@ func main() {
 
 	// create delivery instance
 	handler := delivery.NewHandler(services)
-	
+
 	// create server isntance
 	srv := server.NewServer(config, handler.Init(config))
 	// start server

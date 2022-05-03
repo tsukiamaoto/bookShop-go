@@ -1,9 +1,9 @@
 package http
 
 import (
-	"shopCart/config"
-	"shopCart/middleware"
-	"shopCart/model"
+	"tsukiamaoto/bookShop-go/config"
+	"tsukiamaoto/bookShop-go/middleware"
+	"tsukiamaoto/bookShop-go/model"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"

@@ -1,9 +1,9 @@
 package http
 
 import (
-	"shopCart/config"
-	"shopCart/middleware"
-	"shopCart/model"
+	"tsukiamaoto/bookShop-go/config"
+	"tsukiamaoto/bookShop-go/middleware"
+	"tsukiamaoto/bookShop-go/model"
 
 	"strconv"
 
@@ -143,9 +143,9 @@ func (handler *Handler) DeleteUser(c *gin.Context) {
 // @Router /user/login [post]
 func (handler *Handler) Login(c *gin.Context) {
 	var (
-		user = new(model.User)
+		user      = new(model.User)
 		isLogined = false
-		err error
+		err       error
 	)
 
 	// checked whatever session-key existed or not
@@ -155,11 +155,11 @@ func (handler *Handler) Login(c *gin.Context) {
 		return
 	}
 
-	if(isLogined) {
+	if isLogined {
 		c.JSON(200, gin.H{
 			"isLogined": isLogined,
 		})
-		return 
+		return
 	}
 
 	if err = c.ShouldBind(&user); err != nil || user == nil {
@@ -238,7 +238,7 @@ func (handler *Handler) Signup(c *gin.Context) {
 		return
 	}
 	userId := newUser.ID
-	
+
 	// create seller instance and associate with user
 	if err := handler.services.Sellers.CreateSellerWithUserId(userId); err != nil {
 		log.Error(err)

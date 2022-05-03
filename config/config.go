@@ -26,6 +26,7 @@ type Database struct {
 
 func LoadConfig() *Config {
 	viper.AddConfigPath(".")
+	viper.AddConfigPath("..")
 	viper.SetConfigName("app")
 	viper.SetConfigType("yaml")
 

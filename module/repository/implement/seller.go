@@ -2,7 +2,7 @@ package implement
 
 import (
 	"reflect"
-	"shopCart/model"
+	"tsukiamaoto/bookShop-go/model"
 
 	"gorm.io/gorm"
 )

@@ -4,11 +4,12 @@ import (
 	"context"
 	"time"
 
-	Config "shopCart/config"
+	Config "tsukiamaoto/bookShop-go/config"
 
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 )
+
 var RDB *redis.Client
 var ctx = context.Background()
 
@@ -16,9 +17,9 @@ func newRDB() *redis.Client {
 	config := Config.LoadConfig()
 
 	return redis.NewClient(&redis.Options{
-		Addr: config.Redis.Address,
+		Addr:     config.Redis.Address,
 		Password: config.Redis.Password,
-		DB: config.Redis.DB,
+		DB:       config.Redis.DB,
 	})
 }
 
@@ -31,7 +32,7 @@ func ConnectRDB() {
 	}
 }
 
-func GetRDB() *redis.Client{
+func GetRDB() *redis.Client {
 	if RDB != nil {
 		return RDB
 	}

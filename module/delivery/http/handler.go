@@ -1,8 +1,8 @@
 package http
 
 import (
-	"shopCart/config"
-	"shopCart/module/service"
+	"tsukiamaoto/bookShop-go/config"
+	"tsukiamaoto/bookShop-go/module/service"
 
 	"github.com/gin-gonic/gin"
 )

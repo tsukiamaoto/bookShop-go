@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"net/http"
-	"shopCart/config"
-	"shopCart/redis"
+	"tsukiamaoto/bookShop-go/config"
+	"tsukiamaoto/bookShop-go/redis"
 
 	"strconv"
 
@@ -65,7 +65,7 @@ func AuthRequired(c *gin.Context) {
 
 func GetAuth(c *gin.Context) (bool, error) {
 	var isLogined bool
-	
+
 	session, err := store.Get(c.Request, "session-key")
 	if err != nil {
 		log.Error("Failed to get session, reason is :", err)
