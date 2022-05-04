@@ -7,7 +7,7 @@ import (
 )
 
 type Seller struct {
-	ID        uint `gorm:"primaryKey;uniqueIndex;autoIncrement"`
+	ID        uint `gorm:"primaryKey;uniqueIndex;autoIncrement" json:"id"`
 	UserID    uint
 	Products  []*Product `gorm:"many2many:seller_products"`
 	CreatedAt time.Time

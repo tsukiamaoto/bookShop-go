@@ -8,7 +8,7 @@ import (
 )
 
 type Product struct {
-	ID              uint       `gorm:"primaryKey;uniqueIndex;autoIncrement"`
+	ID              uint       `gorm:"primaryKey;uniqueIndex;autoIncrement" json:"id"`
 	Name            string     `json:"name"`
 	Description     string     `json:"description"`
 	Categories      []Category `gorm:"many2many:product_categories;" json:"categories"`
@@ -21,8 +21,8 @@ type Product struct {
 }
 
 type Category struct {
-	ID        uint           `gorm:"primaryKey;uniqueIndex;autoIncrement"`
-	Types     pq.StringArray `gorm:"type:text[]"`
+	ID        uint           `gorm:"primaryKey;uniqueIndex;autoIncrement" json:"id"`
+	Types     pq.StringArray `gorm:"type:text[]" json:"types"`
 	Images    pq.StringArray `gorm:"type:text[]" json:"images"`
 	Price     int            `json:"price"`
 	Inventory int            `json:"inventory"`

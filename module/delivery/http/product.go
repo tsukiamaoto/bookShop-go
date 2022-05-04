@@ -40,7 +40,7 @@ func (handler *Handler) GetProductList(c *gin.Context) {
 // @ModuleID getProductById
 // @Accept json
 // @Produce json
-// @Success 200 {object} dataResponse{data=model.Product} "get the product"
+// @Success 200 {object} dataResponse{data=[]model.Product} "get the product"
 // @Failure 500 string parameter error!
 // @Router /product/:productId [get]
 func (handler *Handler) GetProductById(c *gin.Context) {

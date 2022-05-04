@@ -8,7 +8,7 @@ import (
 
 // user model
 type User struct {
-	ID        uint   `gorm:"primaryKey;uniqueIndex;autoIncrement"`
+	ID        uint   `gorm:"primaryKey;uniqueIndex;autoIncrement" json:"id"`
 	Username  string `json:"username" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 	CreatedAt time.Time

@@ -7,7 +7,7 @@ import (
 )
 
 type Order struct {
-	ID         uint        `gorm:"primaryKey;uniqueIndex;autoIncrement"`
+	ID         uint        `gorm:"primaryKey;uniqueIndex;autoIncrement" json:"id"`
 	OrderItems []OrderItem `gorm:"many2many:order_orderItems;"`
 	UserID     uint        `gorm:"primaryKey"`
 	CreatedAt  time.Time
