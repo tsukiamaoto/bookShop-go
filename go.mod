@@ -1,4 +1,4 @@
-module tsukiamaoto/bookShop-go
+module github.com/tsukiamaoto/bookShop-go
 
 go 1.17
 

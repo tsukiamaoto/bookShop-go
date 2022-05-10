@@ -1,9 +1,9 @@
 package http
 
 import (
-	"tsukiamaoto/bookShop-go/config"
-	"tsukiamaoto/bookShop-go/middleware"
-	"tsukiamaoto/bookShop-go/model"
+	"github.com/tsukiamaoto/bookShop-go/config"
+	"github.com/tsukiamaoto/bookShop-go/middleware"
+	"github.com/tsukiamaoto/bookShop-go/model"
 
 	"strconv"
 

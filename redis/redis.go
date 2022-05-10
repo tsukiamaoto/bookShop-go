@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	Config "tsukiamaoto/bookShop-go/config"
+	Config "github.com/tsukiamaoto/bookShop-go/config"
 
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"

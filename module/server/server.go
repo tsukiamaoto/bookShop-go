@@ -1,7 +1,7 @@
 package server
 
 import (
-	"tsukiamaoto/bookShop-go/config"
+	"github.com/tsukiamaoto/bookShop-go/config"
 
 	"net/http"
 )
@@ -11,9 +11,9 @@ type Server struct {
 }
 
 func NewServer(conf *config.Config, handler http.Handler) *Server {
-	return &Server {
+	return &Server{
 		httpServer: &http.Server{
-			Addr: conf.ServerAddress,
+			Addr:    conf.ServerAddress,
 			Handler: handler,
 		},
 	}

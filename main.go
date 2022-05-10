@@ -1,13 +1,13 @@
 package main
 
 import (
-	"tsukiamaoto/bookShop-go/config"
-	"tsukiamaoto/bookShop-go/db"
-	"tsukiamaoto/bookShop-go/module/delivery"
-	"tsukiamaoto/bookShop-go/module/repository"
-	"tsukiamaoto/bookShop-go/module/server"
-	"tsukiamaoto/bookShop-go/module/service"
-	"tsukiamaoto/bookShop-go/redis"
+	"github.com/tsukiamaoto/bookShop-go/config"
+	"github.com/tsukiamaoto/bookShop-go/db"
+	"github.com/tsukiamaoto/bookShop-go/module/delivery"
+	"github.com/tsukiamaoto/bookShop-go/module/repository"
+	"github.com/tsukiamaoto/bookShop-go/module/server"
+	"github.com/tsukiamaoto/bookShop-go/module/service"
+	"github.com/tsukiamaoto/bookShop-go/redis"
 )
 
 func init() {

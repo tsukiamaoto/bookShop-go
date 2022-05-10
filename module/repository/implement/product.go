@@ -1,7 +1,7 @@
 package implement
 
 import (
-	"tsukiamaoto/bookShop-go/model"
+	"github.com/tsukiamaoto/bookShop-go/model"
 
 	"gorm.io/gorm"
 )

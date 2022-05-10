@@ -2,9 +2,10 @@ package http
 
 import (
 	"strconv"
-	"tsukiamaoto/bookShop-go/config"
-	"tsukiamaoto/bookShop-go/middleware"
-	"tsukiamaoto/bookShop-go/model"
+
+	"github.com/tsukiamaoto/bookShop-go/config"
+	"github.com/tsukiamaoto/bookShop-go/middleware"
+	"github.com/tsukiamaoto/bookShop-go/model"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

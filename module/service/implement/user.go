@@ -1,8 +1,8 @@
 package implement
 
 import (
-	"tsukiamaoto/bookShop-go/model"
-	repo "tsukiamaoto/bookShop-go/module/repository"
+	"github.com/tsukiamaoto/bookShop-go/model"
+	repo "github.com/tsukiamaoto/bookShop-go/module/repository"
 )
 
 type UsersService struct {

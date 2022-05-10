@@ -2,7 +2,8 @@ package implement
 
 import (
 	"reflect"
-	"tsukiamaoto/bookShop-go/model"
+
+	"github.com/tsukiamaoto/bookShop-go/model"
 
 	"gorm.io/gorm"
 )

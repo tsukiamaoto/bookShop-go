@@ -1,11 +1,11 @@
 package delivery
 
 import (
-	"tsukiamaoto/bookShop-go/config"
-	docs "tsukiamaoto/bookShop-go/docs"
-	"tsukiamaoto/bookShop-go/middleware"
-	v1 "tsukiamaoto/bookShop-go/module/delivery/http"
-	"tsukiamaoto/bookShop-go/module/service"
+	"github.com/tsukiamaoto/bookShop-go/config"
+	docs "github.com/tsukiamaoto/bookShop-go/docs"
+	"github.com/tsukiamaoto/bookShop-go/middleware"
+	v1 "github.com/tsukiamaoto/bookShop-go/module/delivery/http"
+	"github.com/tsukiamaoto/bookShop-go/module/service"
 
 	"fmt"
 

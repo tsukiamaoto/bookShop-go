@@ -2,8 +2,9 @@ package middleware
 
 import (
 	"net/http"
-	"tsukiamaoto/bookShop-go/config"
-	"tsukiamaoto/bookShop-go/redis"
+
+	"github.com/tsukiamaoto/bookShop-go/config"
+	"github.com/tsukiamaoto/bookShop-go/redis"
 
 	"strconv"
 

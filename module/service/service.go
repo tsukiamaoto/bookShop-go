@@ -1,9 +1,9 @@
 package service
 
 import (
-	"tsukiamaoto/bookShop-go/model"
-	repo "tsukiamaoto/bookShop-go/module/repository"
-	service "tsukiamaoto/bookShop-go/module/service/implement"
+	"github.com/tsukiamaoto/bookShop-go/model"
+	repo "github.com/tsukiamaoto/bookShop-go/module/repository"
+	service "github.com/tsukiamaoto/bookShop-go/module/service/implement"
 )
 
 type Users interface {
