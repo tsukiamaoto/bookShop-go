@@ -35,3 +35,25 @@ func (p *ProductRepository) GetProductById(productId uint) (*model.Product, erro
 
 	return product, err
 }
+
+func (p *ProductRepository) GetTypeList() ([][]*model.Type, error) {
+	var types = make([]*model.Type, 0)
+	if err := p.db.Preload("Parent").Find(&types).Error; err != nil {
+		return nil, err
+	}
+
+	// calculated level size
+	typeLevelSize := 0
+	for _, typeValue := range types {
+		if typeLevelSize <= typeValue.Level {
+			typeLevelSize = typeValue.Level + 1
+		}
+	}
+
+	var typeList = make([][]*model.Type, typeLevelSize)
+	for _, typeValue := range types {
+		typeList[typeValue.Level] = append(typeList[typeValue.Level], typeValue)
+	}
+
+	return typeList, nil
+}

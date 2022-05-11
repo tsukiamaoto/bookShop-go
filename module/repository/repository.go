@@ -42,6 +42,7 @@ type Sellers interface {
 type Products interface {
 	GetProductList() ([]*model.Product, error)
 	GetProductById(productId uint) (*model.Product, error)
+	GetTypeList() ([][]*model.Type, error)
 }
 
 type Repositories struct {

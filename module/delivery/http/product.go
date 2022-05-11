@@ -2,7 +2,8 @@ package http
 
 import (
 	"strconv"
-	"tsukiamaoto/bookShop-go/config"
+
+	"github.com/tsukiamaoto/bookShop-go/config"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -13,6 +14,7 @@ func (handler *Handler) initProductRoutes(api *gin.RouterGroup, conf *config.Con
 	{
 		products.GET("", handler.GetProductList)
 		products.GET("/:productId", handler.GetProductById)
+		products.GET("/types", handler.GetTypeList)
 	}
 }
 
@@ -52,5 +54,14 @@ func (handler *Handler) GetProductById(c *gin.Context) {
 		c.JSON(500, "Internal error!")
 	} else {
 		c.JSON(200, dataResponse{Data: product})
+	}
+}
+
+func (handler *Handler) GetTypeList(c *gin.Context) {
+	if typeList, err := handler.services.Products.GetTypeList(); err != nil {
+		log.Error("Failed to get typeList, the reason is", err)
+		c.JSON(500, "Internal error!")
+	} else {
+		c.JSON(200, dataResponse{Data: typeList})
 	}
 }

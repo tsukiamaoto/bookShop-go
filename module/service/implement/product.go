@@ -22,3 +22,7 @@ func (p *ProductsService) GetProductList() ([]*model.Product, error) {
 func (p *ProductsService) GetProductById(productId uint) (*model.Product, error) {
 	return p.repo.GetProductById(productId)
 }
+
+func (p *ProductsService) GetTypeList() ([][]*model.Type, error) {
+	return p.repo.GetTypeList()
+}

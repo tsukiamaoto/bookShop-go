@@ -50,6 +50,7 @@ type SellerHandler interface {
 type ProductHandler interface {
 	GetProductList(c *gin.Context)
 	GetProductById(c *gin.Context)
+	GetTypeList(c *gin.Context)
 }
 
 type Handler struct {
