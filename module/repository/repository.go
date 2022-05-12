@@ -5,6 +5,7 @@ import (
 	repo "github.com/tsukiamaoto/bookShop-go/module/repository/implement"
 
 	"gorm.io/gorm"
+	"github.com/pilagod/gorm-cursor-paginator/v2/paginator"
 )
 
 type Users interface {
@@ -40,7 +41,7 @@ type Sellers interface {
 }
 
 type Products interface {
-	GetProductList() ([]*model.Product, error)
+	GetProductList(query model.Query) ([]*model.Product, paginator.Cursor, error)
 	GetProductById(productId uint) (*model.Product, error)
 	GetTypeList() ([][]*model.Type, error)
 }

@@ -1,6 +1,12 @@
 package utils
 
-import "github.com/tsukiamaoto/bookShop-go/model"
+import (
+	"strconv"
+
+	"github.com/tsukiamaoto/bookShop-go/model"
+
+	"github.com/pilagod/gorm-cursor-paginator/v2/paginator"
+)
 
 func RelationMap(data []string) map[string]string {
 	relations := make(map[string]string)
@@ -26,4 +32,38 @@ func BuildTypes(keys []string, relations map[string]string) []*model.Type {
 		}
 	}
 	return Types
+}
+
+func CreatePaginator(query model.Query, ruleKeys map[string]string) *paginator.Paginator {
+	p := paginator.New(&paginator.Config{
+		Limit: 100,
+		// default order by id DESC
+		Order: paginator.DESC,
+	})
+
+	if query.Limit != "" {
+		limit, _ := strconv.Atoi(query.Limit)
+		p.SetLimit(limit)
+	}
+	if key, ok:= ruleKeys[query.SortType]; ok {
+		rule := paginator.Rule{
+			Key: key,
+		}
+		p.SetRules(rule)
+	}
+	if query.Order != "" {
+		if query.Order == "ASC" {
+			p.SetOrder(paginator.ASC)
+		} else if query.Order == "DESC" {
+			p.SetOrder(paginator.DESC)
+		}
+	}
+	if query.Cursor.PrevPage != "" {
+		p.SetBeforeCursor(query.Cursor.PrevPage)
+	}
+	if query.Cursor.NextPage != "" {
+		p.SetAfterCursor(query.Cursor.NextPage)
+	}
+
+	return p
 }

@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/tsukiamaoto/bookShop-go/config"
+	"github.com/tsukiamaoto/bookShop-go/model"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -28,11 +29,28 @@ func (handler *Handler) initProductRoutes(api *gin.RouterGroup, conf *config.Con
 // @Failure 500 string parameter error!
 // @Router /product [get]
 func (handler *Handler) GetProductList(c *gin.Context) {
-	if productList, err := handler.services.Products.GetProductList(); err != nil {
+	var query model.Query
+	if err := c.BindQuery(&query); err != nil {
+		log.Error("Failed to bind json with query, the reason is ", err)
+	}
+
+	if products, cursor, err := handler.services.Products.GetProductList(query); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
 	} else {
-		c.JSON(200, dataResponse{Data: productList})
+		var nextPage, prevPage = "", ""
+		if cursor.After != nil {
+			nextPage = *cursor.After
+		}
+		if cursor.Before != nil {
+			prevPage = *cursor.Before
+		}
+
+		c.JSON(200, dataResponse{
+			Data:     products,
+			NextPage: nextPage,
+			PrevPage: prevPage,
+		})
 	}
 }
 

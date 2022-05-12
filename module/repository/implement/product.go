@@ -1,8 +1,12 @@
 package implement
 
 import (
-	"github.com/tsukiamaoto/bookShop-go/model"
+	"fmt"
 
+	"github.com/tsukiamaoto/bookShop-go/model"
+	"github.com/tsukiamaoto/bookShop-go/utils"
+
+	"github.com/pilagod/gorm-cursor-paginator/v2/paginator"
 	"gorm.io/gorm"
 )
 
@@ -16,17 +20,30 @@ func NewProductRepository(db *gorm.DB) *ProductRepository {
 	}
 }
 
-func (p *ProductRepository) GetProductList() ([]*model.Product, error) {
+func (p *ProductRepository) GetProductList(query model.Query) ([]*model.Product, paginator.Cursor, error) {
 	var (
 		err      error
 		products = make([]*model.Product, 0)
 	)
 
-	if err = p.db.Preload("Categories").Find(&products).Error; err != nil {
-		return nil, err
+	keys, associationKeys := utils.ConvertProductModelColumn2MapString()
+
+	var assocationOrder string
+	if key, ok := associationKeys[query.SortType]; ok {
+		assocationOrder = fmt.Sprintf("categories.%s %s", key, query.Order)
 	}
 
-	return products, nil
+	stmt := p.db.Table("products").Select("products.*, categories.*").Joins("inner join product_categories on products.id = product_categories.product_id").Joins("inner join categories on categories.id = product_categories.category_id").Order(assocationOrder).Preload("Categories").Find(&products)
+
+	pagination := utils.CreatePaginator(query, keys)
+
+	_, cursor, err := pagination.Paginate(stmt, &products)
+
+	if err != nil {
+		return nil, paginator.Cursor{}, err
+	}
+
+	return products, cursor, nil
 }
 
 func (p *ProductRepository) GetProductById(productId uint) (*model.Product, error) {
