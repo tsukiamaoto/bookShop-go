@@ -42,12 +42,16 @@ func (handler *Handler) initUserRoutes(api *gin.RouterGroup, conf *config.Config
 // @Failure 500 string Internal error!
 // @Router /user [get]
 func (handler *Handler) GetUserList(c *gin.Context) {
-	if users, err := handler.services.Users.GetUserList(); err != nil {
+	var (
+		users []*model.User
+		err error
+	)
+	if users, err = handler.services.Users.GetUserList(); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
-	} else {
-		c.JSON(200, dataResponse{Data: users})
 	}
+
+	c.JSON(200, dataResponse{Data: users})
 }
 
 // @Summary Get User
@@ -61,15 +65,20 @@ func (handler *Handler) GetUserList(c *gin.Context) {
 // @Failure 500 string Internal error!
 // @Router /user/:id [get]
 func (handler *Handler) GetUser(c *gin.Context) {
+	var (
+		user *model.User
+		err  error
+	)
 	uid64, _ := strconv.ParseUint(c.Params.ByName("id"), 10, 64)
 	userId := uint(uid64)
 
-	if user, err := handler.services.Users.GetUserById(userId); err != nil {
+	if user, err = handler.services.Users.GetUserById(userId); err != nil {
 		log.Error(err)
 		c.JSON(500, "Internal error!")
-	} else {
-		c.JSON(200, dataResponse{Data: user})
+		return
 	}
+
+	c.JSON(200, dataResponse{Data: user})
 }
 
 // @Summary Update User
@@ -102,10 +111,11 @@ func (handler *Handler) UpdateUser(c *gin.Context) {
 
 	if _, err = handler.services.Users.UpdateUser(user); err != nil {
 		log.Error(err)
-		c.JSON(500, "internal error!")
-	} else {
-		c.JSON(200, dataResponse{Data: "Updated user successfully!"})
+		c.JSON(500, "Internal!")
+		return
 	}
+
+	c.JSON(200, dataResponse{Data: "Updated user successfully!"})
 }
 
 // @Summary Delete User
@@ -124,10 +134,11 @@ func (handler *Handler) DeleteUser(c *gin.Context) {
 
 	if err := handler.services.Users.DeleteUser(userId); err != nil {
 		log.Error(err)
-		c.JSON(500, "internal error!")
-	} else {
-		c.JSON(200, dataResponse{Data: "Deleted user successfully"})
+		c.JSON(500, "Internal!")
+		return
 	}
+
+	c.JSON(200, dataResponse{Data: "Deleted user successfully"})
 }
 
 // @Summary login
@@ -160,16 +171,17 @@ func (handler *Handler) Login(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"isLogined": isLogined,
 		})
+		return
 	}
 
-	// examinedd user format is correct
+	// examined user format is correct
 	if err = c.ShouldBind(&user); err != nil || user == nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
 
-	// checked whatever user existed or not
+	// checked whether user existed or not
 	if _, err = handler.services.Users.GetUser(user); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
@@ -223,19 +235,31 @@ func (handler *Handler) Logout(c *gin.Context) {
 
 // create user, and then create order and cart instance association with user
 func (handler *Handler) Signup(c *gin.Context) {
-	var user = new(model.User)
+	var (
+		user = new(model.User)
+		err  error
+	)
 
 	if err := c.ShouldBind(&user); err != nil || user == nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
 		return
 	}
+	// check whether user existed or not by username
+	var oldUser *model.User
+	if oldUser, err = handler.services.Users.GetUser(&model.User{Username: user.Username}); err != nil {
+		log.Error(err)
+		c.JSON(500, err.Error())
+		return
+	}
 
-	//create user info
-	var (
-		newUser *model.User
-		err     error
-	)
+	if oldUser.ID != 0 {
+		c.JSON(200, dataResponse{Data: "User has existed!"})
+		return
+	}
+
+	//create a new user
+	var newUser *model.User
 	if newUser, err = handler.services.Users.CreateUser(user); err != nil {
 		log.Error(err)
 		c.JSON(500, err.Error())
@@ -272,5 +296,5 @@ func (handler *Handler) Signup(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, dataResponse{Data: "create user successfully!"})
+	c.JSON(200, dataResponse{Data: "Created user successfully!"})
 }

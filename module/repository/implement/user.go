@@ -28,14 +28,14 @@ func (u *UserRepository) GetUserList() ([]*model.User, error) {
 }
 
 func (u *UserRepository) GetUser(user *model.User) (*model.User, error) {
-	err := u.db.First(&user).Error
+	err := u.db.Limit(1).Find(&user).Error
 
 	return user, err
 }
 
 func (u *UserRepository) GetUserById(userId uint) (*model.User, error) {
 	var user *model.User
-	err := u.db.First(&user).Error
+	err := u.db.Limit(1).Find(&user).Error
 
 	return user, err
 }
