@@ -33,12 +33,39 @@ func (p *ProductRepository) GetProductList(query model.Query) ([]*model.Product,
 		assocationOrder = fmt.Sprintf("categories.%s %s", key, query.Order)
 	}
 
-	stmt := p.db.Table("products").Select("products.*, categories.*").Joins("inner join product_categories on products.id = product_categories.product_id").Joins("inner join categories on categories.id = product_categories.category_id").Order(assocationOrder).Preload("Categories").Find(&products)
+	var whereStmt string
+	if key, ok := keys[query.Column]; ok {
+		whereStmt = fmt.Sprintf("%s = ?", key)
+	}
+	if key, ok := associationKeys[query.Column]; ok {
+		if key == "types" {
+			whereStmt = fmt.Sprintf("? = any(%s)", key)
+		} else {
+			whereStmt = fmt.Sprintf("categories.%s = ?", key)
+		}
+	}
 
+	var stmt *gorm.DB
+	if whereStmt != "" {
+		stmt = p.db.Table("products").Select("products.*, categories.*").
+			Joins("inner join product_categories on products.id = product_categories.product_id").
+			Joins("inner join categories on categories.id = product_categories.category_id").
+			Order(assocationOrder).
+			Preload("Categories").
+			Where(whereStmt, query.Content).
+			Find(&products)
+	} else {
+		stmt = p.db.Table("products").Select("products.*, categories.*").
+			Joins("inner join product_categories on products.id = product_categories.product_id").
+			Joins("inner join categories on categories.id = product_categories.category_id").
+			Order(assocationOrder).
+			Preload("Categories").
+			Find(&products)
+	}
+	
 	pagination := utils.CreatePaginator(query, keys)
 
 	_, cursor, err := pagination.Paginate(stmt, &products)
-
 	if err != nil {
 		return nil, paginator.Cursor{}, err
 	}

@@ -36,7 +36,7 @@ func BuildTypes(keys []string, relations map[string]string) []*model.Type {
 
 func CreatePaginator(query model.Query, ruleKeys map[string]string) *paginator.Paginator {
 	p := paginator.New(&paginator.Config{
-		Limit: 100,
+		Limit: 30,
 		// default order by id DESC
 		Order: paginator.DESC,
 	})
@@ -45,16 +45,16 @@ func CreatePaginator(query model.Query, ruleKeys map[string]string) *paginator.P
 		limit, _ := strconv.Atoi(query.Limit)
 		p.SetLimit(limit)
 	}
-	if key, ok:= ruleKeys[query.SortType]; ok {
+	if key, ok := ruleKeys[query.SortType]; ok {
 		rule := paginator.Rule{
 			Key: key,
 		}
 		p.SetRules(rule)
 	}
 	if query.Order != "" {
-		if query.Order == "ASC" {
+		if query.Order == "ASC" || query.Order == "asc"{
 			p.SetOrder(paginator.ASC)
-		} else if query.Order == "DESC" {
+		} else if query.Order == "DESC" || query.Order == "desc" {
 			p.SetOrder(paginator.DESC)
 		}
 	}
